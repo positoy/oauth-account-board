@@ -49,7 +49,7 @@ public class LoginRepository {
             statement.execute("create table if not exists account(" +
                     "id int not null primary key auto_increment," +
                     "provider varchar(64) not null," +
-                    "username varchar(128) not null," +
+                    "uid varchar(128) not null," +
                     "created datetime not null)");
 
         } catch (Exception e) {
@@ -64,12 +64,12 @@ public class LoginRepository {
         return true;
     }
 
-    public boolean isAccountExist(ResourceProvider resourceProvider, String profileId) {
+    public boolean isAccountExist(ResourceProvider resourceProvider, String id) {
         if (!isReady)
             readyRepository();
 
         boolean itemExist = false;
-        String sql = "select * from account where provider=? and username=?";
+        String sql = "select * from account where provider=? and uid=?";
 
         Connection conn = null;
         PreparedStatement preparedStatement = null;
@@ -80,7 +80,7 @@ public class LoginRepository {
             conn = DriverManager.getConnection(db_url, db_username, db_password);
             preparedStatement = conn.prepareStatement(sql);
             preparedStatement.setString(1, resourceProvider.getServiceName());
-            preparedStatement.setString(2, profileId);
+            preparedStatement.setString(2, id);
 
             logger.info(sql);
             resultSet = preparedStatement.executeQuery();
@@ -101,12 +101,12 @@ public class LoginRepository {
         return itemExist;
     }
 
-    public int getAccountId(ResourceProvider resourceProvider, String profileId) {
+    public int getAccountId(ResourceProvider resourceProvider, String id) {
         if (!isReady)
             readyRepository();
 
         int accountId = -1;
-        String sql = "select * from account where provider=? and username=?";
+        String sql = "select * from account where provider=? and uid=?";
 
         Connection conn = null;
         PreparedStatement preparedStatement = null;
@@ -117,7 +117,7 @@ public class LoginRepository {
             conn = DriverManager.getConnection(db_url, db_username, db_password);
             preparedStatement = conn.prepareStatement(sql);
             preparedStatement.setString(1, resourceProvider.getServiceName());
-            preparedStatement.setString(2, profileId);
+            preparedStatement.setString(2, id);
 
             logger.info(sql);
             resultSet = preparedStatement.executeQuery();
@@ -137,11 +137,11 @@ public class LoginRepository {
         return accountId;
     }
 
-    public boolean createAccount(ResourceProvider resourceProvider, String profileId) {
+    public boolean createAccount(ResourceProvider resourceProvider, String id) {
         if (!isReady)
             readyRepository();
 
-        String sql = "insert into account(provider, username, created) values(?, ?, now())";
+        String sql = "insert into account(provider, uid, created) values(?, ?, now())";
 
         Connection conn = null;
         PreparedStatement preparedStatement = null;
@@ -151,7 +151,7 @@ public class LoginRepository {
             conn = DriverManager.getConnection(db_url, db_username, db_password);
             preparedStatement = conn.prepareStatement(sql);
             preparedStatement.setString(1, resourceProvider.getServiceName());
-            preparedStatement.setString(2, profileId);
+            preparedStatement.setString(2, id);
 
             logger.info(sql);
             preparedStatement.execute();

@@ -24,11 +24,11 @@ public class LoginService {
         Profile profile = ProfileAPI.get(token.access_token);
         logger.info("profile : " + profile.toString());
 
-        if (!loginRepository.isAccountExist(ResourceProvider.NAVER, profile.getName()))
-            if (!loginRepository.createAccount(ResourceProvider.NAVER, profile.getName()))
+        if (!loginRepository.isAccountExist(ResourceProvider.NAVER, profile.getId()))
+            if (!loginRepository.createAccount(ResourceProvider.NAVER, profile.getId()))
                 return null;
 
-        int accountId = loginRepository.getAccountId(ResourceProvider.NAVER, profile.getName());
+        int accountId = loginRepository.getAccountId(ResourceProvider.NAVER, profile.getId());
 
         return new Account(accountId, ResourceProvider.NAVER, token, profile);
     }

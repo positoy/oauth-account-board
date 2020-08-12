@@ -8,7 +8,7 @@ import lombok.ToString;
 @AllArgsConstructor
 @ToString
 public class Profile {
-    final public Long id;
+    final public String id;
     final public String name;
     final public String nickname;
     final public String profile_image;
