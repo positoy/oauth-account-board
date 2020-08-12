@@ -25,13 +25,20 @@ public class BoardController {
     ) {
         logger.info("auth_code : " + code + ", state : " + state);
         Account account = loginService.login(ResourceProvider.NAVER, code);
-        request.setAttribute("account", account);
+        // todo : use cookie instead of the session
+        request.getSession().setAttribute("account", account);
         return "redirect:/board";
     }
 
     @GetMapping("/board")
     @ResponseBody
-    public String getBoard(@RequestParam(defaultValue="") String code) {
-        return "Hello World!";
+    public String getBoard(
+            HttpServletRequest request,
+            @RequestParam(defaultValue="") String code) {
+        Account account = (Account)request.getSession().getAttribute("account");
+
+        String ret = "<h1>Hello World</h1>" +
+                "<p>" + ((Account)request.getSession().getAttribute("account")).toString() + "</p>";
+        return ret;
     }
 }
