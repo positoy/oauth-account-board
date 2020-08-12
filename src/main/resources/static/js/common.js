@@ -3,7 +3,7 @@ const naverOAuthLoginURL = (function () {
     const param = {
         response_type: 'code',
         client_id: 'AlS3TCLxJYn7SNPp75LE',
-        redirect_uri: 'http://localhost:8080/login',
+        redirect_uri: 'http://localhost:8080/login/naver',
         state: 'hello',
     };
 

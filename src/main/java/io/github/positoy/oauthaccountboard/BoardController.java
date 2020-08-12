@@ -17,7 +17,7 @@ public class BoardController {
     @Autowired
     LoginService loginService;
 
-    @GetMapping("/login")
+    @GetMapping("/login/naver")
     public String loginNaver(
             HttpServletRequest request,
             @RequestParam(defaultValue="") String code,
