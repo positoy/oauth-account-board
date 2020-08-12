@@ -1,0 +1,64 @@
+.common-body {
+    padding: 5em;
+}
+
+/**********************
+ * BOARD *
+ **********************/
+.board-table .content {
+    overflow-x: auto;
+}
+
+.board-table {
+    width: 100%;
+}
+
+.board-table th, td {
+    text-align: left;
+    padding: 1em;
+}
+
+.board-table th {
+    border-bottom: 1px solid #666666;
+}
+
+.board-table .col1 {
+    width: 5em;
+}
+.board-table .col3 {
+    width: 15em;
+}
+.board-table .col4 {
+    width: 15em;
+}
+.board-table .content {
+    font-size: 1.5em;
+    line-height: 2em;
+}
+
+/**********************
+ * POST *
+ **********************/
+.post-form {
+    width: 100%;
+}
+
+.post-form label,input {
+    padding: 1em;
+    font-size: 1.5em;
+    line-height: 2em;
+    width: 100%;
+}
+
+.post-form .content {
+    height: 10em;
+}
+
+.button {
+    width: 13em;
+    padding: 1em;
+    margin: 1em;
+    text-align: center;
+    border: solid 1px black;
+    float: right;
+}
