@@ -3,16 +3,14 @@ package io.github.positoy.oauthaccountboard;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
-
-class ResourceServerTest {
+class ResourceProviderTest {
 
     @Test
     public void doInitializationTest() {
-        ResourceServer naver = ResourceServer.NAVER;
-        ResourceServer kakao = ResourceServer.KAKAO;
-        ResourceServer google = ResourceServer.GOOGLE;
-        ResourceServer facebook = ResourceServer.FACEBOOOK;
+        ResourceProvider naver = ResourceProvider.NAVER;
+        ResourceProvider kakao = ResourceProvider.KAKAO;
+        ResourceProvider google = ResourceProvider.GOOGLE;
+        ResourceProvider facebook = ResourceProvider.FACEBOOOK;
 
         Assertions.assertEquals(naver.getServiceName(), "NAVER");
         Assertions.assertEquals(kakao.getServiceName(), "KAKAO");

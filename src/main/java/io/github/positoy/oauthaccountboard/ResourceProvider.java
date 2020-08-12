@@ -1,6 +1,6 @@
 package io.github.positoy.oauthaccountboard;
 
-public enum ResourceServer {
+public enum ResourceProvider {
     NAVER("NAVER"),
     KAKAO("KAKAO"),
     GOOGLE("GOOGLE"),
@@ -8,7 +8,7 @@ public enum ResourceServer {
 
     private String serviceName;
 
-    ResourceServer(String serviceName) {
+    ResourceProvider(String serviceName) {
         this.serviceName = serviceName;
     }
 
