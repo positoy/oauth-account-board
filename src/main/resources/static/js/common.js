@@ -17,6 +17,10 @@ const naverOAuthLoginURL = (function () {
     return url + '?' + encodeQueryData(param);
 })();
 
+function submit() {
+    alert('implement the post');
+}
+
 window.onload = function () {
     let div = document.getElementById('login');
     let a = document.createElement('a');
