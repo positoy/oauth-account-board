@@ -21,7 +21,9 @@
             </tr>
             <tr th:each="topic : ${topics}">
                 <td th:text="${topic.id}">1</td>
-                <td th:text="${topic.title}"><a th:href="@{'/topics/'} + ${topic.id}">테스트 제목</a></td>
+                <td>
+                    <a th:text="${topic.title}" th:href="@{/topics/}+${topic.id}">테스트 제목</a>
+                </td>
                 <td th:text="${topic.author_id}">글쓴이</td>
                 <td th:text="${topic.created}">now!</td>
             </tr>
