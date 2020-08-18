@@ -55,7 +55,7 @@ public class TopicController {
     public String getTopic(@PathVariable int id, Model model) {
         Topic topic = topicService.getTopic(id);
         model.addAttribute("topic", topic);
-        return "redirect:/content.html";
+        return "topic";
     }
 
     @GetMapping("/topics")
