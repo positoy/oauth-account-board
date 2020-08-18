@@ -19,7 +19,7 @@
                 <th class="col3">글쓴이</th>
                 <th class="col4">시간</th>
             </tr>
-            <tr th:each="topic : ${list}">
+            <tr th:each="topic : ${topics}">
                 <td th:text="${topic.id}">1</td>
                 <td th:text="${topic.title}"><a th:href="@{'/topics/'} + ${topic.id}">테스트 제목</a></td>
                 <td th:text="${topic.author_id}">글쓴이</td>

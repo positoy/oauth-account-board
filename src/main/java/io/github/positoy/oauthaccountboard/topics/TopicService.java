@@ -1,7 +1,7 @@
-package io.github.positoy.oauthaccountboard;
+package io.github.positoy.oauthaccountboard.topics;
 
-import io.github.positoy.oauthaccountboard.model.Topic;
-import io.github.positoy.oauthaccountboard.model.TopicListItem;
+import io.github.positoy.oauthaccountboard.models.Topic;
+import io.github.positoy.oauthaccountboard.models.TopicListItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,25 +10,25 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 
 @Service
-public class BoardService {
-    final static Logger logger = LoggerFactory.getLogger(BoardService.class);
+public class TopicService {
+    final static Logger logger = LoggerFactory.getLogger(TopicService.class);
 
     @Autowired
-    BoardRepository boardRepository;
+    TopicRepository topicRepository;
 
     public void postTopic(Topic topic) {
         logger.debug("");
-        boardRepository.add(topic);
+        topicRepository.add(topic);
     }
 
     public Topic getTopic(int id) {
         logger.debug("");
-        return boardRepository.get(id);
+        return topicRepository.get(id);
     }
 
     public ArrayList<TopicListItem> getTopics() {
         logger.debug("");
-        return boardRepository.getList();
+        return topicRepository.getList();
     }
 
     public void updateTopic(int id, String title, String content) {
@@ -39,11 +39,11 @@ public class BoardService {
         topic.setTitle(title);
         topic.setContent(content);
 
-        boardRepository.update(topic);
+        topicRepository.update(topic);
     }
 
     public void deleteTopic(int id) {
         logger.debug("");
-        boardRepository.delete(id);
+        topicRepository.delete(id);
     }
 }

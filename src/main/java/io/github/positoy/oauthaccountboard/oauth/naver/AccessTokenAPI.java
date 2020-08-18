@@ -1,6 +1,8 @@
-package io.github.positoy.oauthaccountboard.naver;
+package io.github.positoy.oauthaccountboard.oauth.naver;
 
 
+import io.github.positoy.oauthaccountboard.oauth.HTTPRequestManager;
+import io.github.positoy.oauthaccountboard.oauth.Token;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

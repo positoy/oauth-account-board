@@ -1,4 +1,4 @@
-package io.github.positoy.oauthaccountboard.model;
+package io.github.positoy.oauthaccountboard.models;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -11,9 +11,10 @@ import java.sql.Timestamp;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
-public class TopicListItem {
+public class Topic {
     int id;
     String title;
+    String content;
     Timestamp created;
-    int author_id;
+    String account_id;
 }

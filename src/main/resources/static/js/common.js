@@ -18,7 +18,8 @@ const naverOAuthLoginURL = (function () {
 })();
 
 function submit() {
-    alert('implement the post');
+    console.log('submit the form.');
+    $('#post-form').submit();
 }
 
 window.onload = function () {

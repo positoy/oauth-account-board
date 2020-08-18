@@ -1,5 +1,4 @@
-package io.github.positoy.oauthaccountboard.naver;
-
+package io.github.positoy.oauthaccountboard.oauth;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -13,7 +12,7 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
-import static io.github.positoy.oauthaccountboard.naver.HTTPRequestManager.METHOD.GET;
+import static io.github.positoy.oauthaccountboard.oauth.HTTPRequestManager.METHOD.GET;
 
 
 public class HTTPRequestManager {

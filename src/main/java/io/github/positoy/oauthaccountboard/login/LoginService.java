@@ -1,10 +1,12 @@
-package io.github.positoy.oauthaccountboard;
+package io.github.positoy.oauthaccountboard.login;
 
-import io.github.positoy.oauthaccountboard.model.Account;
-import io.github.positoy.oauthaccountboard.naver.AccessTokenAPI;
-import io.github.positoy.oauthaccountboard.naver.Profile;
-import io.github.positoy.oauthaccountboard.naver.ProfileAPI;
-import io.github.positoy.oauthaccountboard.naver.Token;
+import io.github.positoy.oauthaccountboard.ResourceProvider;
+import io.github.positoy.oauthaccountboard.models.Account;
+import io.github.positoy.oauthaccountboard.models.AccountSession;
+import io.github.positoy.oauthaccountboard.oauth.naver.AccessTokenAPI;
+import io.github.positoy.oauthaccountboard.oauth.Profile;
+import io.github.positoy.oauthaccountboard.oauth.naver.ProfileAPI;
+import io.github.positoy.oauthaccountboard.oauth.Token;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +19,7 @@ public class LoginService {
     @Autowired
     LoginRepository loginRepository;
 
-    public Account loginNaver(String auth_code) {
+    public AccountSession getNaverSession(String auth_code) {
 
         Token token = AccessTokenAPI.get(auth_code);
         logger.info("token : " + token.toString());
@@ -28,14 +30,13 @@ public class LoginService {
             if (!loginRepository.createAccount(ResourceProvider.NAVER, profile.getId()))
                 return null;
 
-        int accountId = loginRepository.getAccountId(ResourceProvider.NAVER, profile.getId());
-
-        return new Account(accountId, ResourceProvider.NAVER, token, profile);
+        Account account = loginRepository.get(ResourceProvider.NAVER, profile.getId());
+        return new AccountSession(account, token, profile);
     }
 
-    public Account login(ResourceProvider resourceProvider, String auth_code) {
+    public AccountSession getSession(ResourceProvider resourceProvider, String auth_code) {
         if (ResourceProvider.NAVER == resourceProvider) {
-            return loginNaver(auth_code);
+            return getNaverSession(auth_code);
         }
 
         return null;

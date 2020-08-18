@@ -1,5 +1,7 @@
-package io.github.positoy.oauthaccountboard;
+package io.github.positoy.oauthaccountboard.login;
 
+import io.github.positoy.oauthaccountboard.ResourceProvider;
+import io.github.positoy.oauthaccountboard.models.Account;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -100,11 +102,11 @@ public class LoginRepository {
         return itemExist;
     }
 
-    public int getAccountId(ResourceProvider resourceProvider, String id) {
+    public Account get(ResourceProvider resourceProvider, String uid) {
         if (!isReady)
             readyRepository();
 
-        int accountId = -1;
+        Account account = null;
         String sql = "select * from account where provider=? and uid=?";
 
         Connection conn = null;
@@ -116,13 +118,13 @@ public class LoginRepository {
             conn = DriverManager.getConnection(db_url, db_username, db_password);
             preparedStatement = conn.prepareStatement(sql);
             preparedStatement.setString(1, resourceProvider.getServiceName());
-            preparedStatement.setString(2, id);
+            preparedStatement.setString(2, uid);
 
             logger.info(sql);
             resultSet = preparedStatement.executeQuery();
 
             while(resultSet.next()) {
-                accountId = resultSet.getInt("id");
+                account = new Account(resultSet.getInt("id"), resourceProvider, uid, resultSet.getTimestamp("created"));
                 break;
             }
         } catch (Exception e) {
@@ -133,7 +135,7 @@ public class LoginRepository {
             if (resultSet != null) try { resultSet.close(); } catch(Exception e) { e.printStackTrace(); }
         }
 
-        return accountId;
+        return account;
     }
 
     public boolean createAccount(ResourceProvider resourceProvider, String id) {

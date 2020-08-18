@@ -1,4 +1,4 @@
-package io.github.positoy.oauthaccountboard.naver;
+package io.github.positoy.oauthaccountboard.oauth;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

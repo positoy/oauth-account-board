@@ -1,7 +1,7 @@
-package io.github.positoy.oauthaccountboard;
+package io.github.positoy.oauthaccountboard.topics;
 
-import io.github.positoy.oauthaccountboard.model.Topic;
-import io.github.positoy.oauthaccountboard.model.TopicListItem;
+import io.github.positoy.oauthaccountboard.models.Topic;
+import io.github.positoy.oauthaccountboard.models.TopicListItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -11,8 +11,8 @@ import java.sql.*;
 import java.util.ArrayList;
 
 @Repository
-public class BoardRepository {
-    final static Logger logger = LoggerFactory.getLogger(BoardRepository.class);
+public class TopicRepository {
+    final static Logger logger = LoggerFactory.getLogger(TopicRepository.class);
 
     @Value("${spring.datasource.driver-class-name}")
     String db_driver;
@@ -84,7 +84,7 @@ public class BoardRepository {
             preparedStatement = conn.prepareStatement(sql);
             preparedStatement.setString(1, topic.getTitle());
             preparedStatement.setString(2, topic.getContent());
-            preparedStatement.setInt(3, topic.getAuthor_id());
+            preparedStatement.setString(3, topic.getAccount_id());
 
             logger.info(sql);
             preparedStatement.execute();
@@ -124,9 +124,9 @@ public class BoardRepository {
                 final String topic_title = resultSet.getString("title");
                 final String topic_content = resultSet.getString("content");
                 final Timestamp topic_created = resultSet.getTimestamp("created");
-                final int topic_author_id = resultSet.getInt("author_id");
+                final String topic_account_id = resultSet.getString("account_id");
 
-                returnTopic = new Topic(topic_id, topic_title, topic_content, topic_created, topic_author_id);
+                returnTopic = new Topic(topic_id, topic_title, topic_content, topic_created, topic_account_id);
                 break;
             }
         } catch (Exception e) {
@@ -163,7 +163,7 @@ public class BoardRepository {
                 final int topic_id = resultSet.getInt("id");
                 final String topic_title = resultSet.getString("title");
                 final Timestamp topic_created = resultSet.getTimestamp("created");
-                final int topic_author_id = resultSet.getInt("author_id");
+                final int topic_author_id = resultSet.getInt("account_id");
 
                 list.add(new TopicListItem(topic_id, topic_title, topic_created, topic_author_id));
             }
