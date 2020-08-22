@@ -10,14 +10,22 @@
     <!--- code -->
     <script src="/js/common.js"></script>
 </head>
-<body class="common-body">
-    <form id="post-form" method="POST" action="/topics">
-        <label for="title">TITLE</label><br>
-        <input type="text" id="title" name="title"><br>
-        <label for="content">CONTENT</label><br>
-        <input type="textarea" id="content" name="content"><br>
-    </form>
-    <div class="button"><a href="/topics">취소</a></div>
-    <div class="button" onclick="submit()">확인</div>
+<body>
+    <div class="container">
+        <form method="POST" action="/topics">
+            <div class="form-group">
+                <label for="title">제목</label>
+                <input type="text" class="form-control" id="title" name="title">
+            </div>
+            <div class="form-group">
+                <label for="content">내용</label>
+                <input type="textarea" class="form-control" id="content" name="content">
+            </div>
+            <div class="btn-group" role="group" aria-label="buttons">
+                <a class="btn btn-secondary" href="/topics">취소</a>
+                <button class="btn btn-secondary" onclick="submit()">확인</input>
+            </div>
+        </form>
+    </div>
 </body>
 </html>
