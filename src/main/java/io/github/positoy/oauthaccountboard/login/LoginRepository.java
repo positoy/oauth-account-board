@@ -13,16 +13,124 @@ import java.sql.*;
 public class LoginRepository {
     final static Logger logger = LoggerFactory.getLogger(LoginRepository.class);
 
-    @Value("${spring.datasource.driver-class-name}")
     String db_driver;
-    @Value("${spring.datasource.url}")
     String db_url;
-    @Value("${spring.datasource.username}")
     String db_username;
-    @Value("${spring.datasource.password}")
     String db_password;
 
-    boolean isReady = false;
+    public LoginRepository(
+        @Value("${spring.datasource.driver-class-name}") String db_driver,
+        @Value("${spring.datasource.url}") String db_url,
+        @Value("${spring.datasource.username}") String db_username,
+        @Value("${spring.datasource.password}") String db_password
+    ) {
+        this.db_driver = db_driver;
+        this.db_url = db_url;
+        this.db_username = db_username;
+        this.db_password = db_password;
+        readyRepository();
+    }
+
+    public boolean isAccountExist(ResourceProvider resourceProvider, String id) {
+        boolean itemExist = false;
+        String sql = "select * from account where provider=? and uid=?";
+
+        Connection conn = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+
+        try {
+            Class.forName(db_driver);
+            conn = DriverManager.getConnection(db_url, db_username, db_password);
+            preparedStatement = conn.prepareStatement(sql);
+            preparedStatement.setString(1, resourceProvider.getServiceName());
+            preparedStatement.setString(2, id);
+
+            logger.info(sql);
+            resultSet = preparedStatement.executeQuery();
+
+            while(resultSet.next()) {
+                itemExist = true;
+                break;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            handleDBNotExist(e);
+            return false;
+        } finally {
+            if (conn != null) try { conn.close(); } catch(Exception e) { e.printStackTrace(); }
+            if (preparedStatement != null) try { preparedStatement.close(); } catch(Exception e) { e.printStackTrace(); }
+            if (resultSet != null) try { resultSet.close(); } catch(Exception e) { e.printStackTrace(); }
+        }
+
+        return itemExist;
+    }
+
+    public Account get(ResourceProvider resourceProvider, String uid) {
+        Account account = null;
+        String sql = "select * from account where provider=? and uid=?";
+
+        Connection conn = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+
+        try {
+            Class.forName(db_driver);
+            conn = DriverManager.getConnection(db_url, db_username, db_password);
+            preparedStatement = conn.prepareStatement(sql);
+            preparedStatement.setString(1, resourceProvider.getServiceName());
+            preparedStatement.setString(2, uid);
+
+            logger.info(sql);
+            resultSet = preparedStatement.executeQuery();
+
+            while(resultSet.next()) {
+                account = new Account(resultSet.getInt("id"), resourceProvider, uid, resultSet.getTimestamp("created"));
+                break;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            handleDBNotExist(e);
+        } finally {
+            if (conn != null) try { conn.close(); } catch(Exception e) { e.printStackTrace(); }
+            if (preparedStatement != null) try { preparedStatement.close(); } catch(Exception e) { e.printStackTrace(); }
+            if (resultSet != null) try { resultSet.close(); } catch(Exception e) { e.printStackTrace(); }
+        }
+
+        return account;
+    }
+
+    public boolean createAccount(ResourceProvider resourceProvider, String id) {
+        String sql = "insert into account(provider, uid, created) values(?, ?, now())";
+
+        Connection conn = null;
+        PreparedStatement preparedStatement = null;
+
+        try {
+            Class.forName(db_driver);
+            conn = DriverManager.getConnection(db_url, db_username, db_password);
+            preparedStatement = conn.prepareStatement(sql);
+            preparedStatement.setString(1, resourceProvider.getServiceName());
+            preparedStatement.setString(2, id);
+
+            logger.info(sql);
+            preparedStatement.execute();
+        } catch (Exception e) {
+            e.printStackTrace();
+            handleDBNotExist(e);
+            return false;
+        } finally {
+            if (conn != null) try { conn.close(); } catch(Exception e) { e.printStackTrace(); }
+            if (preparedStatement != null) try { preparedStatement.close(); } catch(Exception e) { e.printStackTrace(); }
+        }
+
+        return true;
+    }
+
+    private void handleDBNotExist(Exception e) {
+        if (e.getMessage().contains("doesn't exist"))
+            readyRepository();
+    }
 
     boolean readyRepository() {
 
@@ -55,113 +163,11 @@ public class LoginRepository {
 
         } catch (Exception e) {
             e.printStackTrace();
+            logger.error("failed to ready DB");
             return false;
         } finally {
             if (conn != null) try { conn.close(); } catch(Exception e) { e.printStackTrace(); }
             if (statement != null) try { statement.close(); } catch(Exception e) { e.printStackTrace(); }
-        }
-
-        isReady = true;
-        return true;
-    }
-
-    public boolean isAccountExist(ResourceProvider resourceProvider, String id) {
-        if (!isReady)
-            readyRepository();
-
-        boolean itemExist = false;
-        String sql = "select * from account where provider=? and uid=?";
-
-        Connection conn = null;
-        PreparedStatement preparedStatement = null;
-        ResultSet resultSet = null;
-
-        try {
-            Class.forName(db_driver);
-            conn = DriverManager.getConnection(db_url, db_username, db_password);
-            preparedStatement = conn.prepareStatement(sql);
-            preparedStatement.setString(1, resourceProvider.getServiceName());
-            preparedStatement.setString(2, id);
-
-            logger.info(sql);
-            resultSet = preparedStatement.executeQuery();
-
-            while(resultSet.next()) {
-                itemExist = true;
-                break;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        } finally {
-            if (conn != null) try { conn.close(); } catch(Exception e) { e.printStackTrace(); }
-            if (preparedStatement != null) try { preparedStatement.close(); } catch(Exception e) { e.printStackTrace(); }
-            if (resultSet != null) try { resultSet.close(); } catch(Exception e) { e.printStackTrace(); }
-        }
-
-        return itemExist;
-    }
-
-    public Account get(ResourceProvider resourceProvider, String uid) {
-        if (!isReady)
-            readyRepository();
-
-        Account account = null;
-        String sql = "select * from account where provider=? and uid=?";
-
-        Connection conn = null;
-        PreparedStatement preparedStatement = null;
-        ResultSet resultSet = null;
-
-        try {
-            Class.forName(db_driver);
-            conn = DriverManager.getConnection(db_url, db_username, db_password);
-            preparedStatement = conn.prepareStatement(sql);
-            preparedStatement.setString(1, resourceProvider.getServiceName());
-            preparedStatement.setString(2, uid);
-
-            logger.info(sql);
-            resultSet = preparedStatement.executeQuery();
-
-            while(resultSet.next()) {
-                account = new Account(resultSet.getInt("id"), resourceProvider, uid, resultSet.getTimestamp("created"));
-                break;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            if (conn != null) try { conn.close(); } catch(Exception e) { e.printStackTrace(); }
-            if (preparedStatement != null) try { preparedStatement.close(); } catch(Exception e) { e.printStackTrace(); }
-            if (resultSet != null) try { resultSet.close(); } catch(Exception e) { e.printStackTrace(); }
-        }
-
-        return account;
-    }
-
-    public boolean createAccount(ResourceProvider resourceProvider, String id) {
-        if (!isReady)
-            readyRepository();
-
-        String sql = "insert into account(provider, uid, created) values(?, ?, now())";
-
-        Connection conn = null;
-        PreparedStatement preparedStatement = null;
-
-        try {
-            Class.forName(db_driver);
-            conn = DriverManager.getConnection(db_url, db_username, db_password);
-            preparedStatement = conn.prepareStatement(sql);
-            preparedStatement.setString(1, resourceProvider.getServiceName());
-            preparedStatement.setString(2, id);
-
-            logger.info(sql);
-            preparedStatement.execute();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        } finally {
-            if (conn != null) try { conn.close(); } catch(Exception e) { e.printStackTrace(); }
-            if (preparedStatement != null) try { preparedStatement.close(); } catch(Exception e) { e.printStackTrace(); }
         }
 
         return true;
