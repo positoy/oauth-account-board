@@ -11,12 +11,12 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 
 @Controller
-public class LoginController {
+public class AccountController {
 
-    final static Logger logger = LoggerFactory.getLogger(LoginController.class);
+    final static Logger logger = LoggerFactory.getLogger(AccountController.class);
 
     @Autowired
-    LoginService loginService;
+    AccountService accountService;
 
     @GetMapping("/login/naver")
     public String loginNaver(HttpServletRequest request, @RequestParam(defaultValue="") String code, @RequestParam(defaultValue="") String state) {
@@ -24,7 +24,7 @@ public class LoginController {
         logger.info("auth_code : " + code + ", state : " + state);
 
         // todo : use cookie instead of the session
-        AccountSession accountSession = loginService.getSession(ResourceProvider.NAVER, code);
+        AccountSession accountSession = accountService.getSession(ResourceProvider.NAVER, code);
         if (accountSession != null) {
             logger.info(accountSession.toString());
             request.getSession().setAttribute("accountSession", accountSession);

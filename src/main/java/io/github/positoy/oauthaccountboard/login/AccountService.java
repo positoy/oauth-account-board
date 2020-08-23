@@ -13,11 +13,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class LoginService {
-    final static Logger logger = LoggerFactory.getLogger(LoginService.class);
+public class AccountService {
+    final static Logger logger = LoggerFactory.getLogger(AccountService.class);
 
     @Autowired
-    LoginRepository loginRepository;
+    AccountRepository accountRepository;
 
     public AccountSession getNaverSession(String auth_code) {
 
@@ -26,11 +26,11 @@ public class LoginService {
         Profile profile = ProfileAPI.get(token.access_token);
         logger.info("profile : " + profile.toString());
 
-        if (!loginRepository.exist(ResourceProvider.NAVER, profile.getId()))
-            if (!loginRepository.create(ResourceProvider.NAVER, profile.getId()))
+        if (!accountRepository.exist(ResourceProvider.NAVER, profile.getId()))
+            if (!accountRepository.create(ResourceProvider.NAVER, profile.getId()))
                 return null;
 
-        Account account = loginRepository.get(ResourceProvider.NAVER, profile.getId());
+        Account account = accountRepository.read(ResourceProvider.NAVER, profile.getId());
         return new AccountSession(account, token, profile);
     }
 
