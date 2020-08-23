@@ -36,7 +36,7 @@ public class TopicRepository {
         if (topic == null)
             return false;
 
-        String sql = "insert into topic(title, content, created, account_id) values(?,?,now(),?)";
+        String sql = "insert into topic(title, content, account_id) values(?,?,?)";
 
         Connection conn = null;
         PreparedStatement preparedStatement = null;
@@ -84,10 +84,11 @@ public class TopicRepository {
                 final int topic_id = resultSet.getInt("id");
                 final String topic_title = resultSet.getString("title");
                 final String topic_content = resultSet.getString("content");
+                final int topic_view = resultSet.getInt("view");
                 final Timestamp topic_created = resultSet.getTimestamp("created");
                 final String topic_account_id = resultSet.getString("account_id");
 
-                returnTopic = new Topic(topic_id, topic_title, topic_content, topic_created, topic_account_id);
+                returnTopic = new Topic(topic_id, topic_title, topic_content, topic_view, topic_created, topic_account_id);
                 break;
             }
         } catch (Exception e) {
@@ -123,10 +124,11 @@ public class TopicRepository {
             while(resultSet.next()) {
                 final int topic_id = resultSet.getInt("id");
                 final String topic_title = resultSet.getString("title");
+                final int topic_view = resultSet.getInt("view");
                 final Timestamp topic_created = resultSet.getTimestamp("created");
-                final int topic_author_id = resultSet.getInt("account_id");
+                final int topic_account_id = resultSet.getInt("account_id");
 
-                list.add(new TopicListItem(topic_id, topic_title, topic_created, topic_author_id));
+                list.add(new TopicListItem(topic_id, topic_title, topic_view, topic_created, topic_account_id));
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -255,15 +257,16 @@ public class TopicRepository {
                     "id int not null primary key auto_increment," +
                     "title varchar(64) not null," +
                     "content text not null," +
-                    "created datetime not null," +
-                    "account_id int)");
+                    "view int default 0," +
+                    "created datetime default now()," +
+                    "account_id int default -1)");
 
             // Verify Account Topic
             statement.execute("create table if not exists account(" +
                     "id int not null primary key auto_increment," +
                     "provider varchar(64) not null," +
                     "uid varchar(128) not null," +
-                    "created datetime not null)");
+                    "created datetime default now())");
 
         } catch (Exception e) {
             e.printStackTrace();

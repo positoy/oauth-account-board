@@ -15,6 +15,7 @@ public class Topic {
     int id;
     String title;
     String content;
+    int view;
     Timestamp created;
     String account_id;
 }

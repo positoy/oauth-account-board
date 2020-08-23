@@ -19,6 +19,7 @@
                     <th class="col2">제목</th>
                     <th class="col3">글쓴이</th>
                     <th class="col4">시간</th>
+                    <th class="col5">조회수</th>
                 </tr>
             </thead>
             <tbody>
@@ -27,6 +28,7 @@
                     <td><a th:text="${topic.title}" th:href="@{/topics/}+${topic.id}">테스트 제목</a></td>
                     <td th:text="${topic.author_id}">글쓴이</td>
                     <td th:text="${topic.created}">now!</td>
+                    <td th:text="${topic.view}">0</td>
                 </tr>
             </tbody>
         </table>

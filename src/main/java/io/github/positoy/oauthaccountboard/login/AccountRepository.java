@@ -32,7 +32,7 @@ public class AccountRepository {
     }
 
     public boolean create(ResourceProvider resourceProvider, String id) {
-        String sql = "insert into account(provider, uid, created) values(?, ?, now())";
+        String sql = "insert into account(provider, uid) values(?, ?)";
 
         Connection conn = null;
         PreparedStatement preparedStatement = null;
@@ -146,15 +146,16 @@ public class AccountRepository {
                     "id int not null primary key auto_increment," +
                     "title varchar(64) not null," +
                     "content text not null," +
-                    "created datetime not null," +
-                    "account_id int)");
+                    "view int default 0," +
+                    "created datetime default now()," +
+                    "account_id int default -1)");
 
             // Verify Account Topic
             statement.execute("create table if not exists account(" +
                     "id int not null primary key auto_increment," +
                     "provider varchar(64) not null," +
                     "uid varchar(128) not null," +
-                    "created datetime not null)");
+                    "created datetime default now())");
 
         } catch (Exception e) {
             e.printStackTrace();

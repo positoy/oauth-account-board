@@ -14,6 +14,7 @@ import java.sql.Timestamp;
 public class TopicListItem {
     int id;
     String title;
+    int view;
     Timestamp created;
     int author_id;
 }
