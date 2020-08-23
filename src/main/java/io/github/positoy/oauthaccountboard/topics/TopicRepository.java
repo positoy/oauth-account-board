@@ -32,47 +32,6 @@ public class TopicRepository {
         readyRepository();
     }
 
-    boolean readyRepository() {
-
-        Connection conn = null;
-        Statement statement = null;
-
-        try {
-            Class.forName(db_driver);
-            conn = DriverManager.getConnection(db_url, db_username, db_password);
-            statement = conn.createStatement();
-
-            // Verify Database
-            statement.execute("create database if not exists oauthboard");
-            statement.execute("use oauthboard");
-
-            // Verify Table Topic
-            statement.execute("create table if not exists topic(" +
-                    "id int not null primary key auto_increment," +
-                    "title varchar(64) not null," +
-                    "content text not null," +
-                    "created datetime not null," +
-                    "account_id int)");
-
-            // Verify Account Topic
-            statement.execute("create table if not exists account(" +
-                    "id int not null primary key auto_increment," +
-                    "provider varchar(64) not null," +
-                    "uid varchar(128) not null," +
-                    "created datetime not null)");
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            logger.error("failed to ready DB");
-            return false;
-        } finally {
-            if (conn != null) try { conn.close(); } catch(Exception e) { e.printStackTrace(); }
-            if (statement != null) try { statement.close(); } catch(Exception e) { e.printStackTrace(); }
-        }
-
-        return true;
-    }
-
     public boolean add(Topic topic) {
         if (topic == null)
             return false;
@@ -94,6 +53,7 @@ public class TopicRepository {
             preparedStatement.execute();
         } catch (Exception e) {
             e.printStackTrace();
+            handleDBNotExist(e);
             return false;
         } finally {
             if (conn != null) try { conn.close(); } catch(Exception e) { e.printStackTrace(); }
@@ -132,6 +92,7 @@ public class TopicRepository {
             }
         } catch (Exception e) {
             e.printStackTrace();
+            handleDBNotExist(e);
         } finally {
             if (conn != null) try { conn.close(); } catch(Exception e) { e.printStackTrace(); }
             if (preparedStatement != null) try { preparedStatement.close(); } catch(Exception e) { e.printStackTrace(); }
@@ -167,6 +128,7 @@ public class TopicRepository {
             }
         } catch (Exception e) {
             e.printStackTrace();
+            handleDBNotExist(e);
             list = null;
         } finally {
             if (conn != null) try { conn.close(); } catch(Exception e) { e.printStackTrace(); }
@@ -199,6 +161,7 @@ public class TopicRepository {
             preparedStatement.execute();
         } catch (Exception e) {
             e.printStackTrace();
+            handleDBNotExist(e);
             return false;
         } finally {
             if (conn != null) try { conn.close(); } catch(Exception e) { e.printStackTrace(); }
@@ -229,11 +192,58 @@ public class TopicRepository {
             preparedStatement.execute();
         } catch (Exception e) {
             e.printStackTrace();
+            handleDBNotExist(e);
             return false;
         } finally {
             if (conn != null) try { conn.close(); } catch(Exception e) { e.printStackTrace(); }
             if (preparedStatement != null) try { preparedStatement.close(); } catch(Exception e) { e.printStackTrace(); }
             if (resultSet != null) try { resultSet.close(); } catch(Exception e) { e.printStackTrace(); }
+        }
+
+        return true;
+    }
+
+    private void handleDBNotExist(Exception e) {
+        if (e.getMessage().contains("doesn't exist"))
+            readyRepository();
+    }
+
+    boolean readyRepository() {
+
+        Connection conn = null;
+        Statement statement = null;
+
+        try {
+            Class.forName(db_driver);
+            conn = DriverManager.getConnection(db_url, db_username, db_password);
+            statement = conn.createStatement();
+
+            // Verify Database
+            statement.execute("create database if not exists oauthboard");
+            statement.execute("use oauthboard");
+
+            // Verify Table Topic
+            statement.execute("create table if not exists topic(" +
+                    "id int not null primary key auto_increment," +
+                    "title varchar(64) not null," +
+                    "content text not null," +
+                    "created datetime not null," +
+                    "account_id int)");
+
+            // Verify Account Topic
+            statement.execute("create table if not exists account(" +
+                    "id int not null primary key auto_increment," +
+                    "provider varchar(64) not null," +
+                    "uid varchar(128) not null," +
+                    "created datetime not null)");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.error("failed to ready DB");
+            return false;
+        } finally {
+            if (conn != null) try { conn.close(); } catch(Exception e) { e.printStackTrace(); }
+            if (statement != null) try { statement.close(); } catch(Exception e) { e.printStackTrace(); }
         }
 
         return true;
