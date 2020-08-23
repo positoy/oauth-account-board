@@ -11,23 +11,23 @@ import java.sql.*;
 
 @Repository
 public class AccountRepository {
-    final static Logger logger = LoggerFactory.getLogger(AccountRepository.class);
+    static final Logger logger = LoggerFactory.getLogger(AccountRepository.class);
 
-    String db_driver;
-    String db_url;
-    String db_username;
-    String db_password;
+    String dbDRIVER;
+    String dbURL;
+    String dbUSERNAME;
+    String dbPASSWORD;
 
     public AccountRepository(
-        @Value("${spring.datasource.driver-class-name}") String db_driver,
-        @Value("${spring.datasource.url}") String db_url,
-        @Value("${spring.datasource.username}") String db_username,
-        @Value("${spring.datasource.password}") String db_password
+        @Value("${spring.datasource.driver-class-name}") String dbDRIVER,
+        @Value("${spring.datasource.url}") String dbURL,
+        @Value("${spring.datasource.username}") String dbUSERNAME,
+        @Value("${spring.datasource.password}") String dbPASSWORD
     ) {
-        this.db_driver = db_driver;
-        this.db_url = db_url;
-        this.db_username = db_username;
-        this.db_password = db_password;
+        this.dbDRIVER = dbDRIVER;
+        this.dbURL = dbURL;
+        this.dbUSERNAME = dbUSERNAME;
+        this.dbPASSWORD = dbPASSWORD;
         readyRepository();
     }
 
@@ -38,8 +38,8 @@ public class AccountRepository {
         PreparedStatement preparedStatement = null;
 
         try {
-            Class.forName(db_driver);
-            conn = DriverManager.getConnection(db_url, db_username, db_password);
+            Class.forName(dbDRIVER);
+            conn = DriverManager.getConnection(dbURL, dbUSERNAME, dbPASSWORD);
             preparedStatement = conn.prepareStatement(sql);
             preparedStatement.setString(1, resourceProvider.getServiceName());
             preparedStatement.setString(2, id);
@@ -67,8 +67,8 @@ public class AccountRepository {
         ResultSet resultSet = null;
 
         try {
-            Class.forName(db_driver);
-            conn = DriverManager.getConnection(db_url, db_username, db_password);
+            Class.forName(dbDRIVER);
+            conn = DriverManager.getConnection(dbURL, dbUSERNAME, dbPASSWORD);
             preparedStatement = conn.prepareStatement(sql);
             preparedStatement.setString(1, resourceProvider.getServiceName());
             preparedStatement.setString(2, uid);
@@ -101,8 +101,8 @@ public class AccountRepository {
         ResultSet resultSet = null;
 
         try {
-            Class.forName(db_driver);
-            conn = DriverManager.getConnection(db_url, db_username, db_password);
+            Class.forName(dbDRIVER);
+            conn = DriverManager.getConnection(dbURL, dbUSERNAME, dbPASSWORD);
             preparedStatement = conn.prepareStatement(sql);
             preparedStatement.setString(1, resourceProvider.getServiceName());
             preparedStatement.setString(2, id);
@@ -133,8 +133,8 @@ public class AccountRepository {
         Statement statement = null;
 
         try {
-            Class.forName(db_driver);
-            conn = DriverManager.getConnection(db_url, db_username, db_password);
+            Class.forName(dbDRIVER);
+            conn = DriverManager.getConnection(dbURL, dbUSERNAME, dbPASSWORD);
             statement = conn.createStatement();
 
             // Verify Database

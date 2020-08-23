@@ -18,7 +18,18 @@ import java.util.*;
 @Controller
 public class TopicController {
 
-    final static Logger logger = LoggerFactory.getLogger(TopicController.class);
+    static final Logger logger = LoggerFactory.getLogger(TopicController.class);
+
+    static final String TEMPLATE_POST = "post";
+    static final String TEMPLATE_TOPIC = "topic";
+    static final String TEMPLATE_TOPICS = "topics";
+    static final String TEMPLATE_PUT = "put";
+
+    static final String REDIRECT_TOPICS = "redirect:/topics";
+
+    static final String MODEL_PARAM_TOPIC = "topic";
+    static final String MODEL_PARAM_TOPICS = "topics";
+    static final String MODEL_PARAM_PAGES = "pages";
 
     @Autowired
     TopicService topicService;
@@ -28,7 +39,7 @@ public class TopicController {
     //////////////////////////
     @GetMapping("/topics/post")
     public String getTopicPost() {
-        return "post";
+        return TEMPLATE_POST;
     }
 
     @PostMapping(value = "/topics", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
@@ -40,12 +51,11 @@ public class TopicController {
             topic.setContent(paramMap.getFirst("content"));
 
             AccountSession accountSession  = (AccountSession)request.getSession().getAttribute("accountSession");
-            logger.info(String.format("AccountSession : %s", accountSession == null ? "null" : accountSession.toString()));
             topic.setAccount_id(accountSession == null ? "-1" : accountSession.getUid());
         }
 
         topicService.postTopic(topic);
-        return "redirect:/topics";
+        return REDIRECT_TOPICS;
     }
 
     //////////////////////////
@@ -55,20 +65,20 @@ public class TopicController {
     public String getTopic(@PathVariable int id, Model model) {
         Topic topic = topicService.getTopic(id);
         topic.setView(topic.getView() + 1);
-        model.addAttribute("topic", topic);
+        model.addAttribute(MODEL_PARAM_TOPIC, topic);
 
         topicService.updateTopicView(id);
-        return "topic";
+        return TEMPLATE_TOPIC;
     }
 
     @GetMapping("/topics")
     public String getTopics(@RequestParam(defaultValue = "20") int limit, @RequestParam(defaultValue = "1") int page, Model model) {
-        logger.info(String.format("limit:%d, page:%d", limit, page));
-        ArrayList<TopicListItem> topics = topicService.getTopics(limit, page);
-        model.addAttribute("topics", topics);
-        model.addAttribute("pages", topicService.getPages(page));
-        logger.info(topicService.getPages(page).toString());
-        return "topics";
+        String requestParamLog = String.format("limit : %d, page : %d", limit, page);
+        logger.info(requestParamLog);
+        List<TopicListItem> topics = topicService.getTopics(limit, page);
+        model.addAttribute(MODEL_PARAM_TOPICS, topics);
+        model.addAttribute(MODEL_PARAM_PAGES, topicService.getPages(page));
+        return TEMPLATE_TOPICS;
     }
 
     //////////////////////////
@@ -77,14 +87,14 @@ public class TopicController {
     @GetMapping("/topics/{id}/put")
     public String getTopicPut(@PathVariable int id, Model model) {
         Topic topic = topicService.getTopic(id);
-        model.addAttribute("topic", topic);
-        return "put";
+        model.addAttribute(MODEL_PARAM_TOPIC, topic);
+        return TEMPLATE_PUT;
     }
 
     @PostMapping("/topics/{id}")
     public String putTopic(@PathVariable int id, Topic topic) {
         topicService.updateTopic(id, topic.getTitle(), topic.getContent());
-        return "redirect:/topics";
+        return REDIRECT_TOPICS;
     }
 
     //////////////////////////
@@ -93,6 +103,6 @@ public class TopicController {
     @GetMapping("/topics/{id}/delete")
     public String deleteTopic(@PathVariable int id) {
         topicService.deleteTopic(id);
-        return "redirect:/topics";
+        return REDIRECT_TOPICS;
     }
 }

@@ -9,26 +9,27 @@ import org.springframework.stereotype.Repository;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.List;
 
 @Repository
 public class TopicRepository {
-    final static Logger logger = LoggerFactory.getLogger(TopicRepository.class);
+    static final Logger logger = LoggerFactory.getLogger(TopicRepository.class);
 
-    String db_driver;
-    String db_url;
-    String db_username;
-    String db_password;
+    String dbDRIVER;
+    String dbURL;
+    String dbUSERNAME;
+    String dbPASSWORD;
 
     public TopicRepository(
-            @Value("${spring.datasource.driver-class-name}") String db_driver,
-            @Value("${spring.datasource.url}") String db_url,
-            @Value("${spring.datasource.username}") String db_username,
-            @Value("${spring.datasource.password}") String db_password
+            @Value("${spring.datasource.driver-class-name}") String dbDRIVER,
+            @Value("${spring.datasource.url}") String dbURL,
+            @Value("${spring.datasource.username}") String dbUSERNAME,
+            @Value("${spring.datasource.password}") String dbPASSWORD
     ) {
-        this.db_driver = db_driver;
-        this.db_url = db_url;
-        this.db_username = db_username;
-        this.db_password = db_password;
+        this.dbDRIVER = dbDRIVER;
+        this.dbURL = dbURL;
+        this.dbUSERNAME = dbUSERNAME;
+        this.dbPASSWORD = dbPASSWORD;
         readyRepository();
     }
 
@@ -42,8 +43,8 @@ public class TopicRepository {
         PreparedStatement preparedStatement = null;
 
         try {
-            Class.forName(db_driver);
-            conn = DriverManager.getConnection(db_url, db_username, db_password);
+            Class.forName(dbDRIVER);
+            conn = DriverManager.getConnection(dbURL, dbUSERNAME, dbPASSWORD);
             preparedStatement = conn.prepareStatement(sql);
             preparedStatement.setString(1, topic.getTitle());
             preparedStatement.setString(2, topic.getContent());
@@ -72,8 +73,8 @@ public class TopicRepository {
 
         Topic returnTopic = null;
         try {
-            Class.forName(db_driver);
-            conn = DriverManager.getConnection(db_url, db_username, db_password);
+            Class.forName(dbDRIVER);
+            conn = DriverManager.getConnection(dbURL, dbUSERNAME, dbPASSWORD);
             preparedStatement = conn.prepareStatement(sql);
             preparedStatement.setInt(1, id);
 
@@ -103,7 +104,7 @@ public class TopicRepository {
         return returnTopic;
     }
 
-    public ArrayList<TopicListItem> read(int limit, int offset) {
+    public List<TopicListItem> read(int limit, int offset) {
         String sql = "select * from topic limit ? offset ?";
 
         Connection conn = null;
@@ -112,8 +113,8 @@ public class TopicRepository {
 
         ArrayList<TopicListItem> list = new ArrayList<>();
         try {
-            Class.forName(db_driver);
-            conn = DriverManager.getConnection(db_url, db_username, db_password);
+            Class.forName(dbDRIVER);
+            conn = DriverManager.getConnection(dbURL, dbUSERNAME, dbPASSWORD);
             preparedStatement = conn.prepareStatement(sql);
             preparedStatement.setInt(1, limit);
             preparedStatement.setInt(2, offset);
@@ -151,11 +152,10 @@ public class TopicRepository {
 
         Connection conn = null;
         PreparedStatement preparedStatement = null;
-        ResultSet resultSet = null;
 
         try {
-            Class.forName(db_driver);
-            conn = DriverManager.getConnection(db_url, db_username, db_password);
+            Class.forName(dbDRIVER);
+            conn = DriverManager.getConnection(dbURL, dbUSERNAME, dbPASSWORD);
             preparedStatement = conn.prepareStatement(sql);
             preparedStatement.setString(1, topic.getTitle());
             preparedStatement.setString(2, topic.getContent());
@@ -170,7 +170,6 @@ public class TopicRepository {
         } finally {
             if (conn != null) try { conn.close(); } catch(Exception e) { e.printStackTrace(); }
             if (preparedStatement != null) try { preparedStatement.close(); } catch(Exception e) { e.printStackTrace(); }
-            if (resultSet != null) try { resultSet.close(); } catch(Exception e) { e.printStackTrace(); }
         }
 
         return true;
@@ -181,11 +180,10 @@ public class TopicRepository {
 
         Connection conn = null;
         PreparedStatement preparedStatement = null;
-        ResultSet resultSet = null;
 
         try {
-            Class.forName(db_driver);
-            conn = DriverManager.getConnection(db_url, db_username, db_password);
+            Class.forName(dbDRIVER);
+            conn = DriverManager.getConnection(dbURL, dbUSERNAME, dbPASSWORD);
             preparedStatement = conn.prepareStatement(sql);
             preparedStatement.setInt(1, id);
 
@@ -198,7 +196,6 @@ public class TopicRepository {
         } finally {
             if (conn != null) try { conn.close(); } catch(Exception e) { e.printStackTrace(); }
             if (preparedStatement != null) try { preparedStatement.close(); } catch(Exception e) { e.printStackTrace(); }
-            if (resultSet != null) try { resultSet.close(); } catch(Exception e) { e.printStackTrace(); }
         }
 
         return true;
@@ -212,11 +209,10 @@ public class TopicRepository {
 
         Connection conn = null;
         PreparedStatement preparedStatement = null;
-        ResultSet resultSet = null;
 
         try {
-            Class.forName(db_driver);
-            conn = DriverManager.getConnection(db_url, db_username, db_password);
+            Class.forName(dbDRIVER);
+            conn = DriverManager.getConnection(dbURL, dbUSERNAME, dbPASSWORD);
             preparedStatement = conn.prepareStatement(sql);
             preparedStatement.setInt(1, id);
 
@@ -229,7 +225,6 @@ public class TopicRepository {
         } finally {
             if (conn != null) try { conn.close(); } catch(Exception e) { e.printStackTrace(); }
             if (preparedStatement != null) try { preparedStatement.close(); } catch(Exception e) { e.printStackTrace(); }
-            if (resultSet != null) try { resultSet.close(); } catch(Exception e) { e.printStackTrace(); }
         }
 
         return true;
@@ -244,8 +239,8 @@ public class TopicRepository {
 
         int count = -1;
         try {
-            Class.forName(db_driver);
-            conn = DriverManager.getConnection(db_url, db_username, db_password);
+            Class.forName(dbDRIVER);
+            conn = DriverManager.getConnection(dbURL, dbUSERNAME, dbPASSWORD);
             preparedStatement = conn.prepareStatement(sql);
 
             logger.info(sql);
@@ -272,8 +267,8 @@ public class TopicRepository {
         Statement statement = null;
 
         try {
-            Class.forName(db_driver);
-            conn = DriverManager.getConnection(db_url, db_username, db_password);
+            Class.forName(dbDRIVER);
+            conn = DriverManager.getConnection(dbURL, dbUSERNAME, dbPASSWORD);
             statement = conn.createStatement();
 
             // Verify Database

@@ -6,7 +6,7 @@ public enum ResourceProvider {
     GOOGLE("GOOGLE"),
     FACEBOOOK("FACEBOOK");
 
-    private String serviceName;
+    private final String serviceName;
 
     ResourceProvider(String serviceName) {
         this.serviceName = serviceName;

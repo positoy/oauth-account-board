@@ -13,7 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 @Controller
 public class AccountController {
 
-    final static Logger logger = LoggerFactory.getLogger(AccountController.class);
+    static final Logger logger = LoggerFactory.getLogger(AccountController.class);
 
     @Autowired
     AccountService accountService;
@@ -21,12 +21,13 @@ public class AccountController {
     @GetMapping("/login/naver")
     public String loginNaver(HttpServletRequest request, @RequestParam(defaultValue="") String code, @RequestParam(defaultValue="") String state) {
 
-        logger.info("auth_code : " + code + ", state : " + state);
+        String requestParamLog = String.format("auth_code : %s, state : %s", code, state);
+        logger.info(requestParamLog);
 
         // todo : use cookie instead of the session
         AccountSession accountSession = accountService.getSession(ResourceProvider.NAVER, code);
         if (accountSession != null) {
-            logger.info(accountSession.toString());
+            logger.info("accountSession is not null");
             request.getSession().setAttribute("accountSession", accountSession);
         } else {
             logger.warn("accountSession is null");

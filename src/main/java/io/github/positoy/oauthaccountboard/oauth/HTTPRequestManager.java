@@ -17,11 +17,11 @@ import static io.github.positoy.oauthaccountboard.oauth.HTTPRequestManager.METHO
 
 public class HTTPRequestManager {
 
-    final static Logger logger = LoggerFactory.getLogger(HTTPRequestManager.class);
+    static final Logger logger = LoggerFactory.getLogger(HTTPRequestManager.class);
 
-    public static enum METHOD {
+    public enum METHOD {
         POST, GET, PUT, DELETE
-    };
+    }
 
     String apiURL = "";
     METHOD method = GET;
@@ -66,13 +66,14 @@ public class HTTPRequestManager {
     }
 
     public JSONObject getJsonResponse() throws Exception {
-        String response = response = getResponse();
+        String response = getResponse();
         JSONObject json = (JSONObject) new JSONParser().parse(response);
 
         if (response == null || json == null) {
             throw new Exception("failed to getReseponse or parseResponse");
         }
 
+        logger.info(json.toJSONString());
         return json;
     }
 
@@ -81,19 +82,20 @@ public class HTTPRequestManager {
             throw new Exception("apiURL is empty");
 
         // url
+        StringBuilder urlBuilder = new StringBuilder(apiURL);
         if (queryParams.size() != 0) {
-            apiURL += "?";
+            urlBuilder.append("?");
             int remainQueries = queryParams.size();
             for(Map.Entry<String, String> e :queryParams.entrySet()) {
-                apiURL += (e.getKey() + "=" + e.getValue());
-                if (--remainQueries != 0) {
-                    apiURL += "&";
-                }
+                urlBuilder.append(e.getKey()).append("=").append(e.getValue());
+                if (--remainQueries != 0)
+                    urlBuilder.append("&");
             }
         }
 
-        logger.info("request --> " + apiURL);
-        HttpURLConnection con = connect(apiURL);
+        String responseLog = String.format("request --> %s", urlBuilder.toString());
+        logger.info(responseLog);
+        HttpURLConnection con = connect(urlBuilder.toString());
 
         try {
             // method
@@ -112,7 +114,6 @@ public class HTTPRequestManager {
             // body
             if (!requestBody.isEmpty()) {
                 // TODO consider using JSONObject for body if it's really in use
-                // conn.setRequestProperty("Content-Type","application/json");
                 OutputStream os = con.getOutputStream();
                 os.write(requestBody.getBytes());
                 os.close();

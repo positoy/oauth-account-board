@@ -6,6 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.ToString;
 
+import java.util.Objects;
+
 @ToString
 public class AccountSession extends Account{
     Token token;
@@ -15,5 +17,19 @@ public class AccountSession extends Account{
         super(account);
         this.token = token;
         this.profile = profile;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        AccountSession that = (AccountSession) o;
+        return this.getId() == that.getId();
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), token, profile);
     }
 }

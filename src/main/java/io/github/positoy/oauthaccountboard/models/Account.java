@@ -11,10 +11,10 @@ import java.sql.Timestamp;
 @AllArgsConstructor
 @ToString
 public class Account {
-    public int id;
-    public ResourceProvider provider;
-    public String uid;
-    public Timestamp created;
+    int id;
+    ResourceProvider provider;
+    String uid;
+    Timestamp created;
 
     public Account(Account account) {
         this.id = account.id;

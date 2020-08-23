@@ -8,12 +8,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class TopicService {
-    final static Logger logger = LoggerFactory.getLogger(TopicService.class);
+    static final Logger logger = LoggerFactory.getLogger(TopicService.class);
 
-    public final static int DEFAULT_PAGE_SIZE = 20;
+    public static final int DEFAULT_PAGE_SIZE = 20;
 
     @Autowired
     TopicRepository topicRepository;
@@ -28,7 +29,7 @@ public class TopicService {
         return topicRepository.read(id);
     }
 
-    public ArrayList<TopicListItem> getTopics(int limit, int page) {
+    public List<TopicListItem> getTopics(int limit, int page) {
         logger.debug("");
         if (page < 1) page = 1;
         int offset = DEFAULT_PAGE_SIZE * (page - 1);
@@ -56,12 +57,12 @@ public class TopicService {
         topicRepository.delete(id);
     }
 
-    public ArrayList<Page> getPages(int page) {
+    public List<Page> getPages(int page) {
         ArrayList<Page> pages = new ArrayList<>();
         int lastPage = getLastPage();
 
         // firstIndex, lastIndex
-        int firstIndex = (int)((page - 1) / 10) * 10 + 1;
+        int firstIndex = ((page - 1) / 10) * 10 + 1;
         int lastIndex = (firstIndex + 9 <= lastPage) ? (firstIndex + 9) : lastPage;
 
         // previous

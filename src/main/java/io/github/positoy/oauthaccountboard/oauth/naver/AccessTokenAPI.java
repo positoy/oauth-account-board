@@ -12,31 +12,34 @@ import java.util.Map;
 
 public class AccessTokenAPI {
 
-    final static Logger logger = LoggerFactory.getLogger(AccessTokenAPI.class);
+    static final Logger logger = LoggerFactory.getLogger(AccessTokenAPI.class);
 
-    final static String apiURL = "https://nid.naver.com/oauth2.0/token";
+    static final String API_URL = "https://nid.naver.com/oauth2.0/token";
+
+    private AccessTokenAPI() {
+    }
 
     private static Map<String,String> getCommonQueryParams() {
         Map<String,String> params = new HashMap<>();
-        params.put(NaverConfiguration.KEY.client_id, NaverConfiguration.VAL.client_id);
-        params.put(NaverConfiguration.KEY.client_secret, NaverConfiguration.VAL.client_secret);
+        params.put(NaverConfiguration.KEY.CLIENT_ID, NaverConfiguration.VAL.CLIENT_ID);
+        params.put(NaverConfiguration.KEY.CLIENT_SECRET, NaverConfiguration.VAL.CLIENT_SECRET);
         return params;
     }
 
     public static Token get(String authcode) {
-        HTTPRequestManager request = new HTTPRequestManager(apiURL, HTTPRequestManager.METHOD.GET);
+        HTTPRequestManager request = new HTTPRequestManager(API_URL, HTTPRequestManager.METHOD.GET);
 
         Map<String,String> queryParams = getCommonQueryParams();
-        queryParams.put(NaverConfiguration.KEY.grant_type, NaverConfiguration.VAL.grant_type_authorization_code);
-        queryParams.put(NaverConfiguration.KEY.code, authcode);
-        queryParams.put(NaverConfiguration.KEY.state, NaverConfiguration.VAL.state);
+        queryParams.put(NaverConfiguration.KEY.GRANT_TYPE, NaverConfiguration.VAL.GRANT_TYPE_AUTHORIZATION_CODE);
+        queryParams.put(NaverConfiguration.KEY.CODE, authcode);
+        queryParams.put(NaverConfiguration.KEY.STATE, NaverConfiguration.VAL.STATE);
         request.setQueryParams(queryParams);
 
         JSONObject json = null;
         try {
             json = request.getJsonResponse();
         } catch (Exception e) {
-            logger.info("failed to get and parse accesstoken retrieve response" + e.getMessage());
+            logger.info("failed to get and parse accesstoken retrieve response");
             e.printStackTrace();
             return null;
         }
@@ -50,18 +53,18 @@ public class AccessTokenAPI {
     }
 
     public static Token refresh(String refreshtoken) {
-        HTTPRequestManager request = new HTTPRequestManager(apiURL, HTTPRequestManager.METHOD.GET);
+        HTTPRequestManager request = new HTTPRequestManager(API_URL, HTTPRequestManager.METHOD.GET);
 
         Map<String,String> queryParams = getCommonQueryParams();
-        queryParams.put(NaverConfiguration.KEY.grant_type, NaverConfiguration.VAL.grant_type_refresh_token);
-        queryParams.put(NaverConfiguration.KEY.refresh_token, refreshtoken);
+        queryParams.put(NaverConfiguration.KEY.GRANT_TYPE, NaverConfiguration.VAL.GRANT_TYPE_REFRESH_TOKEN);
+        queryParams.put(NaverConfiguration.KEY.REFRESH_TOKEN, refreshtoken);
         request.setQueryParams(queryParams);
 
         JSONObject json = null;
         try {
             json = request.getJsonResponse();
         } catch (Exception e) {
-            logger.info("failed to get and parse refreshtoken response" + e.getMessage());
+            logger.info("failed to get and parse refreshtoken response");
             e.printStackTrace();
             return null;
         }
@@ -75,18 +78,19 @@ public class AccessTokenAPI {
     }
 
     public static boolean delete(String access_token) {
-        HTTPRequestManager request = new HTTPRequestManager(apiURL, HTTPRequestManager.METHOD.GET);
+        HTTPRequestManager request = new HTTPRequestManager(API_URL, HTTPRequestManager.METHOD.GET);
 
         Map<String,String> queryParams = getCommonQueryParams();
-        queryParams.put(NaverConfiguration.KEY.grant_type, NaverConfiguration.VAL.grant_type_delete);
-        queryParams.put(NaverConfiguration.KEY.access_token, access_token);
-        queryParams.put(NaverConfiguration.KEY.service_provider, NaverConfiguration.VAL.service_provider);
+        queryParams.put(NaverConfiguration.KEY.GRANT_TYPE, NaverConfiguration.VAL.GRANT_TYPE_DELETE);
+        queryParams.put(NaverConfiguration.KEY.ACCESS_TOKEN, access_token);
+        queryParams.put(NaverConfiguration.KEY.SERVICE_PROVIDER, NaverConfiguration.VAL.SERVICE_PROVIDER);
         request.setQueryParams(queryParams);
 
         try {
             String response = request.getResponse();
+            logger.info(response);
         } catch (Exception e) {
-            logger.info("failed to get delete token response" + e.getMessage());
+            logger.info("failed to get delete token response");
             e.printStackTrace();
             return false;
         }

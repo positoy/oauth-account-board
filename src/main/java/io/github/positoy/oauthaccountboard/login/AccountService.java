@@ -14,29 +14,29 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class AccountService {
-    final static Logger logger = LoggerFactory.getLogger(AccountService.class);
+    static final Logger logger = LoggerFactory.getLogger(AccountService.class);
 
     @Autowired
     AccountRepository accountRepository;
 
-    public AccountSession getNaverSession(String auth_code) {
+    public AccountSession getNaverSession(String authcode) {
 
-        Token token = AccessTokenAPI.get(auth_code);
-        logger.info("token : " + token.toString());
+        Token token = AccessTokenAPI.get(authcode);
         Profile profile = ProfileAPI.get(token.access_token);
-        logger.info("profile : " + profile.toString());
+        String resultLog = String.format("token : %s, profile : %s", token.toString(), profile.toString());
+        logger.info(resultLog);
 
-        if (!accountRepository.exist(ResourceProvider.NAVER, profile.getId()))
-            if (!accountRepository.create(ResourceProvider.NAVER, profile.getId()))
-                return null;
+        if (!accountRepository.exist(ResourceProvider.NAVER, profile.getId()) &&
+            !accountRepository.create(ResourceProvider.NAVER, profile.getId()))
+            return null;
 
         Account account = accountRepository.read(ResourceProvider.NAVER, profile.getId());
         return new AccountSession(account, token, profile);
     }
 
-    public AccountSession getSession(ResourceProvider resourceProvider, String auth_code) {
+    public AccountSession getSession(ResourceProvider resourceProvider, String authcode) {
         if (ResourceProvider.NAVER == resourceProvider) {
-            return getNaverSession(auth_code);
+            return getNaverSession(authcode);
         }
 
         return null;
