@@ -14,16 +14,23 @@ import java.util.ArrayList;
 public class TopicRepository {
     final static Logger logger = LoggerFactory.getLogger(TopicRepository.class);
 
-    @Value("${spring.datasource.driver-class-name}")
     String db_driver;
-    @Value("${spring.datasource.url}")
     String db_url;
-    @Value("${spring.datasource.username}")
     String db_username;
-    @Value("${spring.datasource.password}")
     String db_password;
 
-    boolean isReady = false;
+    public TopicRepository(
+            @Value("${spring.datasource.driver-class-name}") String db_driver,
+            @Value("${spring.datasource.url}") String db_url,
+            @Value("${spring.datasource.username}") String db_username,
+            @Value("${spring.datasource.password}") String db_password
+    ) {
+        this.db_driver = db_driver;
+        this.db_url = db_url;
+        this.db_username = db_username;
+        this.db_password = db_password;
+        readyRepository();
+    }
 
     boolean readyRepository() {
 
@@ -56,20 +63,17 @@ public class TopicRepository {
 
         } catch (Exception e) {
             e.printStackTrace();
+            logger.error("failed to ready DB");
             return false;
         } finally {
             if (conn != null) try { conn.close(); } catch(Exception e) { e.printStackTrace(); }
             if (statement != null) try { statement.close(); } catch(Exception e) { e.printStackTrace(); }
         }
 
-        isReady = true;
         return true;
     }
 
     public boolean add(Topic topic) {
-        if (!isReady)
-            readyRepository();
-
         if (topic == null)
             return false;
 
@@ -100,9 +104,6 @@ public class TopicRepository {
     }
 
     public Topic get(int id) {
-        if (!isReady)
-            readyRepository();
-
         String sql = "select * from topic where id=?";
 
         Connection conn = null;
@@ -141,9 +142,6 @@ public class TopicRepository {
     }
 
     public ArrayList<TopicListItem> getList() {
-        if (!isReady)
-            readyRepository();
-
         String sql = "select * from topic";
 
         Connection conn = null;
@@ -180,9 +178,6 @@ public class TopicRepository {
     }
 
     public boolean update(Topic topic) {
-        if (!isReady)
-            readyRepository();
-
         if (topic == null)
             return false;
 
@@ -215,9 +210,6 @@ public class TopicRepository {
     }
 
     public boolean delete(int id) {
-        if (!isReady)
-            readyRepository();
-
         if (id <= 0)
             return false;
 
