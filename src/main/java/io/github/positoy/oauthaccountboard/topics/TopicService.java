@@ -60,18 +60,22 @@ public class TopicService {
         int lastIndex = (firstIndex + 9 <= lastPage) ? (firstIndex + 9) : lastPage;
 
         // previous
-        boolean previousDisabled = (firstIndex == 1);
-        String previousUrl = previousDisabled ? "" : "/topics?page=" + (firstIndex-1);
-        pages.add(new Page("Previous", previousUrl, previousDisabled));
+        boolean previousExist = (firstIndex != 1);
+        if (previousExist) {
+            String previousUrl = String.format("/topics?page=%d", firstIndex - 1);
+            pages.add(new Page("Previous", previousUrl));
+        }
 
         // indexes
         for (int i=firstIndex; i<=lastIndex; i++)
-            pages.add(new Page(Integer.toString(i), "/topics?page="+i, false));
+            pages.add(new Page(Integer.toString(i), "/topics?page="+i));
 
         // next
-        boolean nextDisabled = (lastIndex == lastPage);
-        String nextUrl = nextDisabled ? "" : "/topics?page=" + (lastIndex + 1);
-        pages.add(new Page("Next", nextUrl, nextDisabled));
+        boolean nextExist = (lastIndex != lastPage);
+        if (nextExist) {
+            String nextUrl = String.format("/topics?page=%d", lastIndex + 1);
+            pages.add(new Page("Next", nextUrl));
+        }
 
         return pages;
     }

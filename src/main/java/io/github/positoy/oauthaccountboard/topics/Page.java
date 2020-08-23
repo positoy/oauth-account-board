@@ -8,5 +8,4 @@ import lombok.Data;
 public class Page {
     String label;
     String url;
-    boolean disabled;
 }
