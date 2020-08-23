@@ -46,6 +46,11 @@ public class TopicService {
         topicRepository.update(topic);
     }
 
+    public void updateTopicView(int id) {
+        logger.debug("");
+        topicRepository.updateView(id);
+    }
+
     public void deleteTopic(int id) {
         logger.debug("");
         topicRepository.delete(id);

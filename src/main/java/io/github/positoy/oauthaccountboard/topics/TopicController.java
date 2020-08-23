@@ -54,7 +54,10 @@ public class TopicController {
     @GetMapping("/topics/{id}")
     public String getTopic(@PathVariable int id, Model model) {
         Topic topic = topicService.getTopic(id);
+        topic.setView(topic.getView() + 1);
         model.addAttribute("topic", topic);
+
+        topicService.updateTopicView(id);
         return "topic";
     }
 

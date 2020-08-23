@@ -176,6 +176,34 @@ public class TopicRepository {
         return true;
     }
 
+    public boolean updateView(int id) {
+        String sql = "update topic set view=view+1 where id=?";
+
+        Connection conn = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+
+        try {
+            Class.forName(db_driver);
+            conn = DriverManager.getConnection(db_url, db_username, db_password);
+            preparedStatement = conn.prepareStatement(sql);
+            preparedStatement.setInt(1, id);
+
+            logger.info(sql);
+            preparedStatement.execute();
+        } catch (Exception e) {
+            e.printStackTrace();
+            handleDBNotExist(e);
+            return false;
+        } finally {
+            if (conn != null) try { conn.close(); } catch(Exception e) { e.printStackTrace(); }
+            if (preparedStatement != null) try { preparedStatement.close(); } catch(Exception e) { e.printStackTrace(); }
+            if (resultSet != null) try { resultSet.close(); } catch(Exception e) { e.printStackTrace(); }
+        }
+
+        return true;
+    }
+
     public boolean delete(int id) {
         if (id <= 0)
             return false;
