@@ -32,7 +32,7 @@ public class TopicRepository {
         readyRepository();
     }
 
-    public boolean add(Topic topic) {
+    public boolean create(Topic topic) {
         if (topic == null)
             return false;
 
@@ -63,7 +63,7 @@ public class TopicRepository {
         return true;
     }
 
-    public Topic get(int id) {
+    public Topic read(int id) {
         String sql = "select * from topic where id=?";
 
         Connection conn = null;
@@ -102,7 +102,7 @@ public class TopicRepository {
         return returnTopic;
     }
 
-    public ArrayList<TopicListItem> getList(int limit, int offset) {
+    public ArrayList<TopicListItem> read(int limit, int offset) {
         String sql = "select * from topic limit ? offset ?";
 
         Connection conn = null;
@@ -205,9 +205,35 @@ public class TopicRepository {
         return true;
     }
 
-    private void handleDBNotExist(Exception e) {
-        if (e.getMessage().contains("doesn't exist"))
-            readyRepository();
+    public int count() {
+        String sql = "select count(*) from topic";
+
+        Connection conn = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+
+        int count = -1;
+        try {
+            Class.forName(db_driver);
+            conn = DriverManager.getConnection(db_url, db_username, db_password);
+            preparedStatement = conn.prepareStatement(sql);
+
+            logger.info(sql);
+            resultSet = preparedStatement.executeQuery();
+
+            while(resultSet.next()) {
+                count = resultSet.getInt(1);
+                break;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (conn != null) try { conn.close(); } catch(Exception e) { e.printStackTrace(); }
+            if (preparedStatement != null) try { preparedStatement.close(); } catch(Exception e) { e.printStackTrace(); }
+            if (resultSet != null) try { resultSet.close(); } catch(Exception e) { e.printStackTrace(); }
+        }
+
+        return count;
     }
 
     boolean readyRepository() {
@@ -251,35 +277,8 @@ public class TopicRepository {
         return true;
     }
 
-    public int getCount() {
-        String sql = "select count(*) from topic";
-
-        Connection conn = null;
-        PreparedStatement preparedStatement = null;
-        ResultSet resultSet = null;
-
-        int count = -1;
-        try {
-            Class.forName(db_driver);
-            conn = DriverManager.getConnection(db_url, db_username, db_password);
-            preparedStatement = conn.prepareStatement(sql);
-
-            logger.info(sql);
-            resultSet = preparedStatement.executeQuery();
-
-            while(resultSet.next()) {
-                count = resultSet.getInt(1);
-                break;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            if (conn != null) try { conn.close(); } catch(Exception e) { e.printStackTrace(); }
-            if (preparedStatement != null) try { preparedStatement.close(); } catch(Exception e) { e.printStackTrace(); }
-            if (resultSet != null) try { resultSet.close(); } catch(Exception e) { e.printStackTrace(); }
-        }
-
-        return count;
+    private void handleDBNotExist(Exception e) {
+        if (e.getMessage().contains("doesn't exist"))
+            readyRepository();
     }
-
 }

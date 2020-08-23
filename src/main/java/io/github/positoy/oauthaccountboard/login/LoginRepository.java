@@ -31,7 +31,7 @@ public class LoginRepository {
         readyRepository();
     }
 
-    public boolean isAccountExist(ResourceProvider resourceProvider, String id) {
+    public boolean exist(ResourceProvider resourceProvider, String id) {
         boolean itemExist = false;
         String sql = "select * from account where provider=? and uid=?";
 
@@ -100,7 +100,7 @@ public class LoginRepository {
         return account;
     }
 
-    public boolean createAccount(ResourceProvider resourceProvider, String id) {
+    public boolean create(ResourceProvider resourceProvider, String id) {
         String sql = "insert into account(provider, uid, created) values(?, ?, now())";
 
         Connection conn = null;

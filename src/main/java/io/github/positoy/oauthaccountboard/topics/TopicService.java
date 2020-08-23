@@ -20,19 +20,19 @@ public class TopicService {
 
     public void postTopic(Topic topic) {
         logger.debug("");
-        topicRepository.add(topic);
+        topicRepository.create(topic);
     }
 
     public Topic getTopic(int id) {
         logger.debug("");
-        return topicRepository.get(id);
+        return topicRepository.read(id);
     }
 
     public ArrayList<TopicListItem> getTopics(int limit, int page) {
         logger.debug("");
         if (page < 1) page = 1;
         int offset = DEFAULT_PAGE_SIZE * (page - 1);
-        return topicRepository.getList(limit, offset);
+        return topicRepository.read(limit, offset);
     }
 
     public void updateTopic(int id, String title, String content) {
@@ -81,7 +81,7 @@ public class TopicService {
     }
 
     private int getLastPage() {
-        int count = topicRepository.getCount();
+        int count = topicRepository.count();
         return (count / DEFAULT_PAGE_SIZE) + (count % DEFAULT_PAGE_SIZE == 0 ? 0 : 1);
     }
 }

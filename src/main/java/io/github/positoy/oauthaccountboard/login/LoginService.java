@@ -26,8 +26,8 @@ public class LoginService {
         Profile profile = ProfileAPI.get(token.access_token);
         logger.info("profile : " + profile.toString());
 
-        if (!loginRepository.isAccountExist(ResourceProvider.NAVER, profile.getId()))
-            if (!loginRepository.createAccount(ResourceProvider.NAVER, profile.getId()))
+        if (!loginRepository.exist(ResourceProvider.NAVER, profile.getId()))
+            if (!loginRepository.create(ResourceProvider.NAVER, profile.getId()))
                 return null;
 
         Account account = loginRepository.get(ResourceProvider.NAVER, profile.getId());
