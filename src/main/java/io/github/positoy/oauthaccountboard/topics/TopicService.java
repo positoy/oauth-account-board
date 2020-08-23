@@ -13,6 +13,8 @@ import java.util.ArrayList;
 public class TopicService {
     final static Logger logger = LoggerFactory.getLogger(TopicService.class);
 
+    public final static int DEFAULT_PAGE_SIZE = 20;
+
     @Autowired
     TopicRepository topicRepository;
 
@@ -26,9 +28,11 @@ public class TopicService {
         return topicRepository.get(id);
     }
 
-    public ArrayList<TopicListItem> getTopics() {
+    public ArrayList<TopicListItem> getTopics(int limit, int page) {
         logger.debug("");
-        return topicRepository.getList();
+        if (page < 1) page = 1;
+        int offset = DEFAULT_PAGE_SIZE * (page - 1);
+        return topicRepository.getList(limit, offset);
     }
 
     public void updateTopic(int id, String title, String content) {
@@ -45,5 +49,35 @@ public class TopicService {
     public void deleteTopic(int id) {
         logger.debug("");
         topicRepository.delete(id);
+    }
+
+    public ArrayList<Page> getPages(int page) {
+        ArrayList<Page> pages = new ArrayList<>();
+        int lastPage = getLastPage();
+
+        // firstIndex, lastIndex
+        int firstIndex = (int)((page - 1) / 10) * 10 + 1;
+        int lastIndex = (firstIndex + 9 <= lastPage) ? (firstIndex + 9) : lastPage;
+
+        // previous
+        boolean previousDisabled = (firstIndex == 1);
+        String previousUrl = previousDisabled ? "" : "/topics?page=" + (firstIndex-1);
+        pages.add(new Page("Previous", previousUrl, previousDisabled));
+
+        // indexes
+        for (int i=firstIndex; i<=lastIndex; i++)
+            pages.add(new Page(Integer.toString(i), "/topics?page="+i, false));
+
+        // next
+        boolean nextDisabled = (lastIndex == lastPage);
+        String nextUrl = nextDisabled ? "" : "/topics?page=" + (lastIndex + 1);
+        pages.add(new Page("Next", nextUrl, nextDisabled));
+
+        return pages;
+    }
+
+    private int getLastPage() {
+        int count = topicRepository.getCount();
+        return (count / DEFAULT_PAGE_SIZE) + (count % DEFAULT_PAGE_SIZE == 0 ? 0 : 1);
     }
 }

@@ -102,8 +102,8 @@ public class TopicRepository {
         return returnTopic;
     }
 
-    public ArrayList<TopicListItem> getList() {
-        String sql = "select * from topic";
+    public ArrayList<TopicListItem> getList(int limit, int offset) {
+        String sql = "select * from topic limit ? offset ?";
 
         Connection conn = null;
         PreparedStatement preparedStatement = null;
@@ -114,6 +114,8 @@ public class TopicRepository {
             Class.forName(db_driver);
             conn = DriverManager.getConnection(db_url, db_username, db_password);
             preparedStatement = conn.prepareStatement(sql);
+            preparedStatement.setInt(1, limit);
+            preparedStatement.setInt(2, offset);
 
             logger.info(sql);
             resultSet = preparedStatement.executeQuery();
@@ -248,4 +250,36 @@ public class TopicRepository {
 
         return true;
     }
+
+    public int getCount() {
+        String sql = "select count(*) from topic";
+
+        Connection conn = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+
+        int count = -1;
+        try {
+            Class.forName(db_driver);
+            conn = DriverManager.getConnection(db_url, db_username, db_password);
+            preparedStatement = conn.prepareStatement(sql);
+
+            logger.info(sql);
+            resultSet = preparedStatement.executeQuery();
+
+            while(resultSet.next()) {
+                count = resultSet.getInt(1);
+                break;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (conn != null) try { conn.close(); } catch(Exception e) { e.printStackTrace(); }
+            if (preparedStatement != null) try { preparedStatement.close(); } catch(Exception e) { e.printStackTrace(); }
+            if (resultSet != null) try { resultSet.close(); } catch(Exception e) { e.printStackTrace(); }
+        }
+
+        return count;
+    }
+
 }

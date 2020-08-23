@@ -30,6 +30,11 @@
                 </tr>
             </tbody>
         </table>
+        <nav aria-label="...">
+            <ul class="pagination">
+                <li th:each="page : ${pages}" class="page-item"><a class="page-link" th:href="${page?.url}" th:text="${page?.label}"></a></li>
+            </ul>
+        </nav>
         <div class="btn-group" role="group" aria-label="buttons">
             <a class="btn btn-secondary" href="/topics/post">글쓰기</a>
         </div>

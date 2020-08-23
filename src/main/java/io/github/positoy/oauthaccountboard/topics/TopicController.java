@@ -59,11 +59,12 @@ public class TopicController {
     }
 
     @GetMapping("/topics")
-    public String getTopics(HttpServletRequest request, Model model) {
-        AccountSession accountSession = (AccountSession)request.getSession().getAttribute("AccountSession");
-        logger.info(accountSession == null ? "account is null" : accountSession.toString());
-        ArrayList<TopicListItem> topics = topicService.getTopics();
+    public String getTopics(@RequestParam(defaultValue = "20") int limit, @RequestParam(defaultValue = "1") int page, Model model) {
+        logger.info(String.format("limit:%d, page:%d", limit, page));
+        ArrayList<TopicListItem> topics = topicService.getTopics(limit, page);
         model.addAttribute("topics", topics);
+        model.addAttribute("pages", topicService.getPages(page));
+        logger.info(topicService.getPages(page).toString());
         return "topics";
     }
 
