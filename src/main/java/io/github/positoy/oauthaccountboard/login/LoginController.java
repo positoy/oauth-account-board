@@ -25,8 +25,13 @@ public class LoginController {
 
         // todo : use cookie instead of the session
         AccountSession accountSession = loginService.getSession(ResourceProvider.NAVER, code);
-        logger.info(accountSession.toString());
-        request.getSession().setAttribute("accountSession", accountSession);
+        if (accountSession != null) {
+            logger.info(accountSession.toString());
+            request.getSession().setAttribute("accountSession", accountSession);
+        } else {
+            logger.warn("accountSession is null");
+        }
+
         return "redirect:/topics";
     }
 }
