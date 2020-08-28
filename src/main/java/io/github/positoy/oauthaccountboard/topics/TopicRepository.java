@@ -105,7 +105,7 @@ public class TopicRepository {
     }
 
     public List<TopicListItem> read(int limit, int offset) {
-        String sql = "select * from topic limit ? offset ?";
+        String sql = "select * from topic order by created desc limit ? offset ?";
 
         Connection conn = null;
         PreparedStatement preparedStatement = null;
