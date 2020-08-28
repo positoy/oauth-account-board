@@ -18,32 +18,20 @@ public class AccountController {
     @Autowired
     AccountService accountService;
 
-    @GetMapping("/login/naver")
-    public String loginNaver(HttpServletRequest request, @RequestParam(defaultValue="") String code, @RequestParam(defaultValue="") String state) {
+    @GetMapping("/login/{provider}")
+    public String loginKakao(HttpServletRequest request, @PathVariable String provider, @RequestParam(defaultValue="") String code, @RequestParam(defaultValue="") String state) {
 
-        String requestParamLog = String.format("auth_code : %s, state : %s", code, state);
+        String requestParamLog = String.format("provider : %s, auth_code : %s, state : %s", provider, code, state);
         logger.info(requestParamLog);
 
-        // todo : use cookie instead of the session
-        AccountSession accountSession = accountService.getSession(ResourceProvider.NAVER, code);
-        if (accountSession != null) {
-            logger.info("accountSession is not null");
-            request.getSession().setAttribute("accountSession", accountSession);
-        } else {
-            logger.warn("accountSession is null");
-        }
-
-        return "redirect:/topics";
-    }
-
-    @GetMapping("/login/kakao")
-    public String loginKakao(HttpServletRequest request, @RequestParam(defaultValue="") String code, @RequestParam(defaultValue="") String state) {
-
-        String requestParamLog = String.format("auth_code : %s, state : %s", code, state);
-        logger.info(requestParamLog);
+        ResourceProvider resourceProvider = null;
+        if (provider.equalsIgnoreCase("naver"))
+            resourceProvider = ResourceProvider.NAVER;
+        else if (provider.equalsIgnoreCase("kakao"))
+            resourceProvider = ResourceProvider.KAKAO;
 
         // todo : use cookie instead of the session
-        AccountSession accountSession = accountService.getSession(ResourceProvider.KAKAO, code);
+        AccountSession accountSession = accountService.getSession(resourceProvider, code);
         if (accountSession != null) {
             logger.info("accountSession is not null");
             request.getSession().setAttribute("accountSession", accountSession);
