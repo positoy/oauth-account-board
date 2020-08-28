@@ -35,4 +35,23 @@ public class AccountController {
 
         return "redirect:/topics";
     }
+
+    @GetMapping("/login/kakao")
+    public String loginKakao(HttpServletRequest request, @RequestParam(defaultValue="") String code, @RequestParam(defaultValue="") String state) {
+
+        String requestParamLog = String.format("auth_code : %s, state : %s", code, state);
+        logger.info(requestParamLog);
+
+        // todo : use cookie instead of the session
+        AccountSession accountSession = accountService.getSession(ResourceProvider.KAKAO, code);
+        if (accountSession != null) {
+            logger.info("accountSession is not null");
+            request.getSession().setAttribute("accountSession", accountSession);
+        } else {
+            logger.warn("accountSession is null");
+        }
+
+        return "redirect:/topics";
+    }
+
 }

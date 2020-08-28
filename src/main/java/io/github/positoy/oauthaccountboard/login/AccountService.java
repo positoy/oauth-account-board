@@ -3,9 +3,7 @@ package io.github.positoy.oauthaccountboard.login;
 import io.github.positoy.oauthaccountboard.ResourceProvider;
 import io.github.positoy.oauthaccountboard.models.Account;
 import io.github.positoy.oauthaccountboard.models.AccountSession;
-import io.github.positoy.oauthaccountboard.oauth.naver.AccessTokenAPI;
 import io.github.positoy.oauthaccountboard.oauth.Profile;
-import io.github.positoy.oauthaccountboard.oauth.naver.ProfileAPI;
 import io.github.positoy.oauthaccountboard.oauth.Token;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,27 +17,31 @@ public class AccountService {
     @Autowired
     AccountRepository accountRepository;
 
-    public AccountSession getNaverSession(String authcode) {
-
-        Token token = AccessTokenAPI.get(authcode);
-        Profile profile = ProfileAPI.get(token.access_token);
-        String resultLog = String.format("token : %s, profile : %s", token.toString(), profile.toString());
-        logger.info(resultLog);
-
-        if (!accountRepository.exist(ResourceProvider.NAVER, profile.getId()) &&
-            !accountRepository.create(ResourceProvider.NAVER, profile.getId()))
-            return null;
-
-        Account account = accountRepository.read(ResourceProvider.NAVER, profile.getId());
-        return new AccountSession(account, token, profile);
-    }
-
     public AccountSession getSession(ResourceProvider resourceProvider, String authcode) {
+
+        Token token = null;
+        Profile profile = null;
+
         if (ResourceProvider.NAVER == resourceProvider) {
-            return getNaverSession(authcode);
+            token = io.github.positoy.oauthaccountboard.oauth.naver.AccessTokenAPI.get(authcode);
+            profile = io.github.positoy.oauthaccountboard.oauth.naver.ProfileAPI.get(token.access_token);
+        } else if (ResourceProvider.KAKAO == resourceProvider) {
+            token = io.github.positoy.oauthaccountboard.oauth.kakao.AccessTokenAPI.get(authcode);
+            profile = io.github.positoy.oauthaccountboard.oauth.kakao.ProfileAPI.get(token.access_token);
         }
 
-        return null;
+        String resultLog = String.format("token : %s, profile : %s",
+                token == null ? "null" : token.toString(),
+                profile == null ? "null" : profile.toString()
+        );
+        logger.info(resultLog);
+
+        if (!accountRepository.exist(resourceProvider, profile.getId()) &&
+                !accountRepository.create(resourceProvider, profile.getId()))
+            return null;
+
+        Account account = accountRepository.read(resourceProvider, profile.getId());
+        return new AccountSession(account, token, profile);
     }
 
 }
