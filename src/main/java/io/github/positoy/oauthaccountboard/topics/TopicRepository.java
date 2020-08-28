@@ -104,8 +104,10 @@ public class TopicRepository {
         return returnTopic;
     }
 
-    public List<TopicListItem> read(int limit, int offset) {
-        String sql = "select * from topic order by created desc limit ? offset ?";
+    public List<TopicListItem> read(int limit, int offset, String keyword) {
+        String sql = keyword.isEmpty() ?
+                "select * from topic order by created desc limit ? offset ?" :
+                "select * from topic where title like ? or content like ? order by created desc limit ? offset ?";
 
         Connection conn = null;
         PreparedStatement preparedStatement = null;
@@ -116,8 +118,15 @@ public class TopicRepository {
             Class.forName(dbDRIVER);
             conn = DriverManager.getConnection(dbURL, dbUSERNAME, dbPASSWORD);
             preparedStatement = conn.prepareStatement(sql);
-            preparedStatement.setInt(1, limit);
-            preparedStatement.setInt(2, offset);
+            if (keyword.isEmpty()) {
+                preparedStatement.setInt(1, limit);
+                preparedStatement.setInt(2, offset);
+            } else {
+                preparedStatement.setString(1, "%" + keyword + "%");
+                preparedStatement.setString(2, "%" + keyword + "%");
+                preparedStatement.setInt(3, limit);
+                preparedStatement.setInt(4, offset);
+            }
 
             logger.info(sql);
             resultSet = preparedStatement.executeQuery();

@@ -72,10 +72,14 @@ public class TopicController {
     }
 
     @GetMapping("/topics")
-    public String getTopics(@RequestParam(defaultValue = "20") int limit, @RequestParam(defaultValue = "1") int page, Model model) {
-        String requestParamLog = String.format("limit : %d, page : %d", limit, page);
+    public String getTopics(
+            @RequestParam(defaultValue = "20") int limit,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "") String keyword,
+            Model model) {
+        String requestParamLog = String.format("limit : %d, page : %d, keyword : %s", limit, page, keyword);
         logger.info(requestParamLog);
-        List<TopicListItem> topics = topicService.getTopics(limit, page);
+        List<TopicListItem> topics = topicService.getTopics(limit, page, keyword);
         model.addAttribute(MODEL_PARAM_TOPICS, topics);
         model.addAttribute(MODEL_PARAM_PAGES, topicService.getPages(page));
         return TEMPLATE_TOPICS;

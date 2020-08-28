@@ -40,6 +40,17 @@
         <div class="btn-group" role="group" aria-label="buttons">
             <a class="btn btn-secondary" href="/topics/post">글쓰기</a>
         </div>
+        <form action="/topics" method="GET">
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <span class="input-group-text" id="basic-addon1">#</span>
+                </div>
+                <input type="text" class="form-control" name="keyword" aria-label="keyword" aria-describedby="basic-addon1">
+                <div class="btn-group">
+                    <input type="submit" class="btn btn-secondary" value="검색">
+                </div>
+            </div>
+        </form>
     </div>
 </body>
 </html>

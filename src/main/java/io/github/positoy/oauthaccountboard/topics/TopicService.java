@@ -29,11 +29,12 @@ public class TopicService {
         return topicRepository.read(id);
     }
 
-    public List<TopicListItem> getTopics(int limit, int page) {
+    public List<TopicListItem> getTopics(int limit, int page, String keyword) {
         logger.debug("");
         if (page < 1) page = 1;
         int offset = DEFAULT_PAGE_SIZE * (page - 1);
-        return topicRepository.read(limit, offset);
+
+        return topicRepository.read(limit, offset, keyword);
     }
 
     public void updateTopic(int id, String title, String content) {
