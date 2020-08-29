@@ -3,6 +3,7 @@ package io.github.positoy.oauthaccountboard.login;
 import io.github.positoy.oauthaccountboard.ResourceProvider;
 import io.github.positoy.oauthaccountboard.models.Account;
 import io.github.positoy.oauthaccountboard.models.AccountSession;
+import io.github.positoy.oauthaccountboard.models.entity.AccountEntity;
 import io.github.positoy.oauthaccountboard.oauth.Profile;
 import io.github.positoy.oauthaccountboard.oauth.Token;
 import org.slf4j.Logger;
@@ -15,7 +16,7 @@ public class AccountService {
     static final Logger logger = LoggerFactory.getLogger(AccountService.class);
 
     @Autowired
-    AccountRepository accountRepository;
+    AccountMapper accountMapper;
 
     public AccountSession getSession(ResourceProvider resourceProvider, String authcode) {
 
@@ -36,11 +37,12 @@ public class AccountService {
         );
         logger.info(resultLog);
 
-        if (!accountRepository.exist(resourceProvider, profile.getId()) &&
-                !accountRepository.create(resourceProvider, profile.getId()))
+        if (accountMapper.getAccount(resourceProvider.getServiceName(), profile.getId()) == null &&
+            accountMapper.insertAccount(resourceProvider.getServiceName(), profile.getId()) == 0)
             return null;
 
-        Account account = accountRepository.read(resourceProvider, profile.getId());
+        AccountEntity accountEntity = accountMapper.getAccount(resourceProvider.getServiceName(), profile.getId());
+        Account account = new Account(accountEntity.getId(), resourceProvider, accountEntity.getUid(), accountEntity.getCreated());
         return new AccountSession(account, token, profile);
     }
 
