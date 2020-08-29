@@ -4,7 +4,9 @@ import io.github.positoy.oauthaccountboard.ResourceProvider;
 import io.github.positoy.oauthaccountboard.models.Account;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
 import java.sql.*;
@@ -13,46 +15,17 @@ import java.sql.*;
 public class AccountRepository {
     static final Logger logger = LoggerFactory.getLogger(AccountRepository.class);
 
-    String dbDRIVER;
-    String dbURL;
-    String dbUSERNAME;
-    String dbPASSWORD;
-
-    public AccountRepository(
-        @Value("${spring.datasource.driver-class-name}") String dbDRIVER,
-        @Value("${spring.datasource.url}") String dbURL,
-        @Value("${spring.datasource.username}") String dbUSERNAME,
-        @Value("${spring.datasource.password}") String dbPASSWORD
-    ) {
-        this.dbDRIVER = dbDRIVER;
-        this.dbURL = dbURL;
-        this.dbUSERNAME = dbUSERNAME;
-        this.dbPASSWORD = dbPASSWORD;
-        readyRepository();
-    }
+    @Autowired
+    JdbcTemplate jdbcTemplate;
 
     public boolean create(ResourceProvider resourceProvider, String id) {
-        String sql = "insert into account(provider, uid) values(?, ?)";
-
-        Connection conn = null;
-        PreparedStatement preparedStatement = null;
-
         try {
-            Class.forName(dbDRIVER);
-            conn = DriverManager.getConnection(dbURL, dbUSERNAME, dbPASSWORD);
-            preparedStatement = conn.prepareStatement(sql);
-            preparedStatement.setString(1, resourceProvider.getServiceName());
-            preparedStatement.setString(2, id);
-
-            logger.info(sql);
-            preparedStatement.execute();
+            String sql = "insert into account(provider, uid) values(?, ?)";
+            jdbcTemplate.update(sql, new Object[]{resourceProvider.getServiceName(), id});
         } catch (Exception e) {
             e.printStackTrace();
             handleDBNotExist(e);
             return false;
-        } finally {
-            if (conn != null) try { conn.close(); } catch(Exception e) { e.printStackTrace(); }
-            if (preparedStatement != null) try { preparedStatement.close(); } catch(Exception e) { e.printStackTrace(); }
         }
 
         return true;
@@ -60,89 +33,39 @@ public class AccountRepository {
 
     public Account read(ResourceProvider resourceProvider, String uid) {
         Account account = null;
-        String sql = "select * from account where provider=? and uid=?";
-
-        Connection conn = null;
-        PreparedStatement preparedStatement = null;
-        ResultSet resultSet = null;
-
         try {
-            Class.forName(dbDRIVER);
-            conn = DriverManager.getConnection(dbURL, dbUSERNAME, dbPASSWORD);
-            preparedStatement = conn.prepareStatement(sql);
-            preparedStatement.setString(1, resourceProvider.getServiceName());
-            preparedStatement.setString(2, uid);
-
-            logger.info(sql);
-            resultSet = preparedStatement.executeQuery();
-
-            while(resultSet.next()) {
-                account = new Account(resultSet.getInt("id"), resourceProvider, uid, resultSet.getTimestamp("created"));
-                break;
-            }
+            String sql = "select * from account where provider=? and uid=?";
+            account = jdbcTemplate.queryForObject(sql, new Object[]{resourceProvider.getServiceName(), uid}, new AccountMapper());
         } catch (Exception e) {
             e.printStackTrace();
             handleDBNotExist(e);
-        } finally {
-            if (conn != null) try { conn.close(); } catch(Exception e) { e.printStackTrace(); }
-            if (preparedStatement != null) try { preparedStatement.close(); } catch(Exception e) { e.printStackTrace(); }
-            if (resultSet != null) try { resultSet.close(); } catch(Exception e) { e.printStackTrace(); }
         }
 
         return account;
     }
 
     public boolean exist(ResourceProvider resourceProvider, String id) {
-        boolean itemExist = false;
-        String sql = "select * from account where provider=? and uid=?";
-
-        Connection conn = null;
-        PreparedStatement preparedStatement = null;
-        ResultSet resultSet = null;
-
+        Account account = null;
         try {
-            Class.forName(dbDRIVER);
-            conn = DriverManager.getConnection(dbURL, dbUSERNAME, dbPASSWORD);
-            preparedStatement = conn.prepareStatement(sql);
-            preparedStatement.setString(1, resourceProvider.getServiceName());
-            preparedStatement.setString(2, id);
-
-            logger.info(sql);
-            resultSet = preparedStatement.executeQuery();
-
-            while(resultSet.next()) {
-                itemExist = true;
-                break;
-            }
+            String sql = "select * from account where provider=? and uid=?";
+            account = jdbcTemplate.queryForObject(sql, new Object[]{resourceProvider.getServiceName(), id}, new AccountMapper());
         } catch (Exception e) {
             e.printStackTrace();
             handleDBNotExist(e);
             return false;
-        } finally {
-            if (conn != null) try { conn.close(); } catch(Exception e) { e.printStackTrace(); }
-            if (preparedStatement != null) try { preparedStatement.close(); } catch(Exception e) { e.printStackTrace(); }
-            if (resultSet != null) try { resultSet.close(); } catch(Exception e) { e.printStackTrace(); }
         }
 
-        return itemExist;
+        return account != null;
     }
 
     boolean readyRepository() {
-
-        Connection conn = null;
-        Statement statement = null;
-
         try {
-            Class.forName(dbDRIVER);
-            conn = DriverManager.getConnection(dbURL, dbUSERNAME, dbPASSWORD);
-            statement = conn.createStatement();
-
             // Verify Database
-            statement.execute("create database if not exists oauthboard");
-            statement.execute("use oauthboard");
+            jdbcTemplate.update("create database if not exists oauthboard");
+            jdbcTemplate.update("use oauthboard");
 
             // Verify Table Topic
-            statement.execute("create table if not exists topic(" +
+            jdbcTemplate.update("create table if not exists topic(" +
                     "id int not null primary key auto_increment," +
                     "title varchar(64) not null," +
                     "content text not null," +
@@ -151,7 +74,7 @@ public class AccountRepository {
                     "account_id int default -1)");
 
             // Verify Account Topic
-            statement.execute("create table if not exists account(" +
+            jdbcTemplate.update("create table if not exists account(" +
                     "id int not null primary key auto_increment," +
                     "provider varchar(64) not null," +
                     "uid varchar(128) not null," +
@@ -161,9 +84,6 @@ public class AccountRepository {
             e.printStackTrace();
             logger.error("failed to ready DB");
             return false;
-        } finally {
-            if (conn != null) try { conn.close(); } catch(Exception e) { e.printStackTrace(); }
-            if (statement != null) try { statement.close(); } catch(Exception e) { e.printStackTrace(); }
         }
 
         return true;
@@ -172,5 +92,20 @@ public class AccountRepository {
     private void handleDBNotExist(Exception e) {
         if (e.getMessage().contains("doesn't exist"))
             readyRepository();
+    }
+
+    class AccountMapper implements RowMapper<Account> {
+        @Override
+        public Account mapRow(ResultSet rs, int i) throws SQLException {
+            String provider = rs.getString("provider");
+
+            ResourceProvider resourceProvider = null;
+            if (provider == "naver") resourceProvider = ResourceProvider.NAVER;
+            else if (provider.equalsIgnoreCase("kakao")) resourceProvider = ResourceProvider.KAKAO;
+            else if (provider.equalsIgnoreCase("google")) resourceProvider = ResourceProvider.GOOGLE;
+            else resourceProvider = ResourceProvider.FACEBOOOK;
+
+            return new Account(rs.getInt("id"), resourceProvider, rs.getString("uid"), rs.getTimestamp("created"));
+        }
     }
 }
