@@ -103,7 +103,7 @@ public class AccountRepository {
             if (provider.equalsIgnoreCase("naver")) resourceProvider = ResourceProvider.NAVER;
             else if (provider.equalsIgnoreCase("kakao")) resourceProvider = ResourceProvider.KAKAO;
             else if (provider.equalsIgnoreCase("google")) resourceProvider = ResourceProvider.GOOGLE;
-            else resourceProvider = ResourceProvider.FACEBOOOK;
+            else resourceProvider = ResourceProvider.FACEBOOK;
 
             return new Account(rs.getInt("id"), resourceProvider, rs.getString("uid"), rs.getTimestamp("created"));
         }
