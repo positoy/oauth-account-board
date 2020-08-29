@@ -2,6 +2,7 @@ package io.github.positoy.oauthaccountboard.topics;
 
 import io.github.positoy.oauthaccountboard.models.Topic;
 import io.github.positoy.oauthaccountboard.models.TopicListItem;
+import io.github.positoy.oauthaccountboard.models.entity.TopicEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,16 +18,17 @@ public class TopicService {
     public static final int DEFAULT_PAGE_SIZE = 20;
 
     @Autowired
-    TopicRepository topicRepository;
+    TopicMapper topicMapper;
 
     public void postTopic(Topic topic) {
         logger.debug("");
-        topicRepository.create(topic);
+        topicMapper.insertTopic(topic.getTitle(), topic.getContent(), Integer.parseInt(topic.getAccount_id()));
     }
 
     public Topic getTopic(int id) {
         logger.debug("");
-        return topicRepository.read(id);
+        TopicEntity topicEntity = topicMapper.getTopic(id);
+        return new Topic(topicEntity.getId(), topicEntity.getTitle(), topicEntity.getContent(), topicEntity.getView(), topicEntity.getCreated(), String.valueOf(topicEntity.getAccount_id()));
     }
 
     public List<TopicListItem> getTopics(int limit, int page, String keyword) {
@@ -34,28 +36,30 @@ public class TopicService {
         if (page < 1) page = 1;
         int offset = DEFAULT_PAGE_SIZE * (page - 1);
 
-        return topicRepository.read(limit, offset, keyword);
+        List<TopicEntity> entities = keyword.isEmpty() ?
+                topicMapper.getTopicPage(limit, offset) :
+                topicMapper.getTopicPageWithKeyword(limit, offset, "%" + keyword + "%");
+
+        List<TopicListItem> list = new ArrayList<>();
+        for (TopicEntity entity : entities)
+            list.add(new TopicListItem(entity.getId(), entity.getTitle(), entity.getView(), entity.getCreated(), entity.getAccount_id()));
+
+        return list;
     }
 
     public void updateTopic(int id, String title, String content) {
         logger.debug("");
-
-        Topic topic = new Topic();
-        topic.setId(id);
-        topic.setTitle(title);
-        topic.setContent(content);
-
-        topicRepository.update(topic);
+        topicMapper.updateTopic(title, content, id);
     }
 
     public void updateTopicView(int id) {
         logger.debug("");
-        topicRepository.updateView(id);
+        topicMapper.updateTopicView(id);
     }
 
     public void deleteTopic(int id) {
         logger.debug("");
-        topicRepository.delete(id);
+        topicMapper.deleteTopic(id);
     }
 
     public List<Page> getPages(int page) {
@@ -64,7 +68,7 @@ public class TopicService {
 
         // firstIndex, lastIndex
         int firstIndex = ((page - 1) / 10) * 10 + 1;
-        int lastIndex = (firstIndex + 9 <= lastPage) ? (firstIndex + 9) : lastPage;
+        int lastIndex = Math.min(firstIndex + 9, lastPage);
 
         // previous
         boolean previousExist = (firstIndex != 1);
@@ -88,7 +92,7 @@ public class TopicService {
     }
 
     private int getLastPage() {
-        int count = topicRepository.count();
+        int count = topicMapper.getTotalTopicCount();
         return (count / DEFAULT_PAGE_SIZE) + (count % DEFAULT_PAGE_SIZE == 0 ? 0 : 1);
     }
 }
