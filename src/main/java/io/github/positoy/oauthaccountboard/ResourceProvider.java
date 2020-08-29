@@ -4,7 +4,9 @@ public enum ResourceProvider {
     NAVER("NAVER"),
     KAKAO("KAKAO"),
     GOOGLE("GOOGLE"),
-    FACEBOOOK("FACEBOOK");
+    FACEBOOK("FACEBOOK"),
+    UNKNOWN("UNKNOWN");
+
 
     private final String serviceName;
 

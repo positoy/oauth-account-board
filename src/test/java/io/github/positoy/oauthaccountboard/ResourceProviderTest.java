@@ -10,12 +10,14 @@ class ResourceProviderTest {
         ResourceProvider naver = ResourceProvider.NAVER;
         ResourceProvider kakao = ResourceProvider.KAKAO;
         ResourceProvider google = ResourceProvider.GOOGLE;
-        ResourceProvider facebook = ResourceProvider.FACEBOOOK;
+        ResourceProvider facebook = ResourceProvider.FACEBOOK;
+        ResourceProvider unknown = ResourceProvider.UNKNOWN;
 
         Assertions.assertEquals(naver.getServiceName(), "NAVER");
         Assertions.assertEquals(kakao.getServiceName(), "KAKAO");
         Assertions.assertEquals(google.getServiceName(), "GOOGLE");
         Assertions.assertEquals(facebook.getServiceName(), "FACEBOOK");
+        Assertions.assertEquals(unknown.getServiceName(), "UNKNOWN");
     }
 
 }
