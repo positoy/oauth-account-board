@@ -36,11 +36,12 @@ public class AccountService {
         );
         logger.info(resultLog);
 
-        if (!accountRepository.exist(resourceProvider, profile.getId()) &&
-                !accountRepository.create(resourceProvider, profile.getId()))
-            return null;
+        if (accountRepository.countByProviderAndUid(resourceProvider.getServiceName(), profile.getId()) == 0)
+            accountRepository.save(new AccountEntity(resourceProvider.getServiceName(), profile.getId()));
 
-        Account account = accountRepository.read(resourceProvider, profile.getId());
+        AccountEntity accountEntity = accountRepository.findByProviderAndUid(resourceProvider.getServiceName(), profile.getId());
+        Account account = new Account(accountEntity.getId(), resourceProvider, profile.getId(), accountEntity.getCreated());
+
         return new AccountSession(account, token, profile);
     }
 

@@ -1,6 +1,7 @@
 package io.github.positoy.oauthaccountboard.models;
 
 import io.github.positoy.oauthaccountboard.ResourceProvider;
+import io.github.positoy.oauthaccountboard.login.AccountEntity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.ToString;
