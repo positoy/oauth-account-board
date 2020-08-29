@@ -21,7 +21,7 @@ public class AccountRepository {
     public boolean create(ResourceProvider resourceProvider, String id) {
         try {
             String sql = "insert into account(provider, uid) values(?, ?)";
-            jdbcTemplate.update(sql, new Object[]{resourceProvider.getServiceName(), id});
+            jdbcTemplate.update(sql, resourceProvider.getServiceName(), id);
         } catch (Exception e) {
             e.printStackTrace();
             handleDBNotExist(e);
@@ -100,7 +100,7 @@ public class AccountRepository {
             String provider = rs.getString("provider");
 
             ResourceProvider resourceProvider = null;
-            if (provider == "naver") resourceProvider = ResourceProvider.NAVER;
+            if (provider.equalsIgnoreCase("naver")) resourceProvider = ResourceProvider.NAVER;
             else if (provider.equalsIgnoreCase("kakao")) resourceProvider = ResourceProvider.KAKAO;
             else if (provider.equalsIgnoreCase("google")) resourceProvider = ResourceProvider.GOOGLE;
             else resourceProvider = ResourceProvider.FACEBOOOK;
