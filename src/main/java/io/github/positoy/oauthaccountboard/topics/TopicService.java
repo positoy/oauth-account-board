@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -43,9 +44,10 @@ public class TopicService {
         if (page < 1) page = 1;
         int offset = DEFAULT_PAGE_SIZE * (page - 1);
 
+        Specification<TopicEntity> specs = keyword.isEmpty() ? null : TopicSpecifications.titleLike(keyword).or(TopicSpecifications.contentLike(keyword));
         PageRequest pageRequest = PageRequest.of(page-1, limit, Sort.by(Sort.Direction.DESC, "created"));
 
-        List<TopicEntity> topicEntities = topicRepository.findAll(pageRequest).getContent();
+        List<TopicEntity> topicEntities = topicRepository.findAll(specs, pageRequest).getContent();
         List<TopicListItem> list = new ArrayList<>();
         for (TopicEntity entity : topicEntities)
             list.add(new TopicListItem(entity.getId(), entity.getTitle(), entity.getView(), entity.getCreated(), entity.getAccount_id()));
